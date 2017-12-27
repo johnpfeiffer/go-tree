@@ -50,3 +50,27 @@ func (tree *BinarySearchTree) Find(target int) *Node {
 		}
 	}
 }
+
+// InsertValue adds data (with a new node) to the Binary Search Tree
+func (tree *BinarySearchTree) InsertValue(target int) {
+	if tree.Root == nil {
+		tree.Root = &Node{Data: target}
+		return
+	}
+	current := tree.Root
+	for {
+		if current.Data > target {
+			if current.left == nil {
+				current.left = &Node{Data: target}
+				return
+			}
+			current = current.left
+		} else {
+			if current.right == nil {
+				current.right = &Node{Data: target}
+				return
+			}
+			current = current.right
+		}
+	}
+}
