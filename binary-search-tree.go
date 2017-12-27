@@ -33,3 +33,20 @@ func Display(n *Node) {
 		Display(n.right)
 	}
 }
+
+// Find returns the first node that has a matching key
+func (tree *BinarySearchTree) Find(target int) *Node {
+	current := tree.Root
+	for {
+		switch {
+		case current == nil:
+			return nil
+		case current.Data == target:
+			return current
+		case current.Data > target:
+			current = current.left
+		case current.Data < target:
+			current = current.right
+		}
+	}
+}

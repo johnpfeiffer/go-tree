@@ -13,5 +13,10 @@ func main() {
 	fmt.Println("Binary Search Tree")
 	bst := BinarySearchTree{Root: &Node{Data: 0}}
 	fmt.Printf("%#v\n", bst)
+	a := Node{Data: -1}
+	bst.Root.left = &a
 	bst.Display()
+	fmt.Printf("%#v\n", bst.Find(0))
+	fmt.Printf("%#v\n", bst.Find(-1))
+	fmt.Printf("%#v\n", bst.Find(-2))
 }
