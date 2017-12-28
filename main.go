@@ -21,5 +21,5 @@ func main() {
 	fmt.Printf("%#v\n", bst.Find(-2))
 
 	bst.InsertValue(1)
-	bst.Display()
+	fmt.Println(bst.Display())
 }

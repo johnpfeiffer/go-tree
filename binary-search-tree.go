@@ -1,6 +1,7 @@
 package main
 
 import "fmt"
+import "bytes"
 
 // Node contains data (and usually a value or a pointer to a value) and pointers to the child nodes
 type Node struct {
@@ -14,24 +15,26 @@ type BinarySearchTree struct {
 	Root *Node
 }
 
-// Display shows all of the nodes in a tree
-func (tree *BinarySearchTree) Display() {
-	Display(tree.Root)
-	fmt.Println()
+// Display returns a string with the data from all of the nodes in the tree
+func (tree *BinarySearchTree) Display() string {
+	return Display(tree.Root)
 }
 
 // Display shows the node data and continues recursively
-func Display(n *Node) {
+func Display(n *Node) string {
+	var s string
+	var b bytes.Buffer
 	if n == nil {
-		return
+		return ""
 	}
-	fmt.Printf("%d ", n.Data)
+	b.WriteString(fmt.Sprintf("%d ", n.Data))
 	if n.left != nil {
-		Display(n.left)
+		s += Display(n.left)
 	}
 	if n.right != nil {
-		Display(n.right)
+		s += Display(n.right)
 	}
+	return b.String() + s
 }
 
 // Find returns the first node that has a matching key
