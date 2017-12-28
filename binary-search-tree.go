@@ -77,3 +77,17 @@ func (tree *BinarySearchTree) InsertValue(target int) {
 		}
 	}
 }
+
+// RemoveValue removes the first node with the matching data
+func (tree *BinarySearchTree) RemoveValue(target int) {
+	current := tree.Root
+	if current == nil {
+		return
+	}
+	if tree.Root.Data == target {
+		if tree.Root.right != nil {
+			// TODO: rotate right
+		}
+		tree.Root = nil
+	}
+}

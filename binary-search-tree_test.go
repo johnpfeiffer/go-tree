@@ -152,6 +152,89 @@ func TestFindSuccess(t *testing.T) {
 	}
 }
 
+func TestFindNothing(t *testing.T) {
+	nonExistentValue := 1001
+	for _, tc := range BSTTestCases {
+		t.Run(fmt.Sprintf("Should not find %v in tree %v ", nonExistentValue, tc.treeString), func(t *testing.T) {
+			tree := createBST(tc.dataValues)
+			result := tree.Find(nonExistentValue)
+			if nil != result {
+				t.Error("\nExpected to not find ", nonExistentValue, " in: ", tc.treeString, " but got ", result)
+			}
+		})
+	}
+}
+
+func TestRemoveValueSimpleNonExistent(t *testing.T) {
+	nonExistentValue := 1001
+	for _, tc := range BSTTestCases {
+		t.Run(fmt.Sprintf("Removing %v should have no effect on tree %v ", nonExistentValue, tc.treeString), func(t *testing.T) {
+			tree := createBST(tc.dataValues)
+			tree.RemoveValue(nonExistentValue)
+			if len(tc.dataValues) == 0 {
+				assertEmpty(t, tree)
+			}
+			if len(tc.dataValues) == 1 {
+				assertLeafNode(t, tree.Root.Data, tree.Root)
+			}
+			if tc.treeString != tree.Display() {
+				t.Error("\nExpected same tree (string):", tc.treeString, "\nReceived: ", tree.Display())
+			}
+		})
+	}
+
+}
+
+func TestRemoveValueSimpleSuccess(t *testing.T) {
+	var testCases = []struct {
+		dataValues         []int
+		target             int
+		expectedTree       BinarySearchTree
+		expectedTreeString string
+	}{
+		{dataValues: []int{2}, target: 2, expectedTree: BinarySearchTree{Root: nil}, expectedTreeString: ""},
+		{dataValues: []int{2, 3}, target: 2, expectedTree: BinarySearchTree{Root: &Node{Data: 2}}, expectedTreeString: "2 "},
+		{dataValues: []int{2, 1}, target: 2, expectedTree: BinarySearchTree{Root: &Node{Data: 1}}, expectedTreeString: "1 "},
+
+		// {dataValues: []int{2, 5}, tree: BinarySearchTree{Root: &Node{Data: 2, right: &Node{Data: 5}}}, treeString: "2 5 "},
+		// // perfect tree /\
+		// {dataValues: []int{2, 1, 5}, tree: BinarySearchTree{Root: &Node{Data: 2, left: &Node{Data: 1}, right: &Node{Data: 5}}},
+		// 	treeString: "2 1 5 "},
+
+		// {dataValues: []int{1, 2}, target: 2},
+
+		// {dataValues: []int{2, 1}, target: 2, expectedLeftChild: &Node{Data: 1}, expectedRightChild: nil},
+		// {dataValues: []int{2, 1, 3}, target: 2, expectedLeftChild: &Node{Data: 1}, expectedRightChild: &Node{Data: 3}},
+		// {dataValues: []int{2, 1}, target: 1, expectedLeftChild: nil, expectedRightChild: nil},
+		// {dataValues: []int{2, 3}, target: 3, expectedLeftChild: nil, expectedRightChild: nil},
+
+		// {dataValues: []int{2, 1, -1}, target: 2, expectedLeftChild: &Node{Data: 1}, expectedRightChild: nil},
+		// {dataValues: []int{2, 1, -1}, target: 1, expectedLeftChild: &Node{Data: -1}, expectedRightChild: nil},
+		// {dataValues: []int{2, 0, 1}, target: 0, expectedLeftChild: nil, expectedRightChild: &Node{Data: 1}},
+		// {dataValues: []int{2, 1, -1}, target: -1, expectedLeftChild: nil, expectedRightChild: nil},
+		// {dataValues: []int{2, 0, 1}, target: 1, expectedLeftChild: nil, expectedRightChild: nil},
+	}
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("Find %v in tree %v ", tc.target, tc.dataValues), func(t *testing.T) {
+			tree := createBST(tc.dataValues)
+			tree.RemoveValue(tc.target)
+			switch len(tc.dataValues) {
+			case 0:
+			case 1:
+				assertEmpty(t, tree)
+			case 2:
+				assertLeafNode(t, tree.Root.Data, tree.Root)
+			}
+
+			// expectedReducedDataValues := intRemoved(tc.target, tc.dataValues)
+			// expectedTree := createBST(expectedReducedDataValues)
+			if tc.expectedTreeString != tree.Display() {
+				t.Error("\nExpected tree (string):", tc.expectedTreeString, "\nReceived: ", tree.Display())
+			}
+		})
+	}
+}
+
 // HELPER FUNCTIONS
 func createBST(a []int) BinarySearchTree {
 	bst := BinarySearchTree{}
@@ -160,6 +243,29 @@ func createBST(a []int) BinarySearchTree {
 	}
 	return bst
 }
+
+func intInSlice(target int, a []int) bool {
+	for _, v := range a {
+		if target == v {
+			return true
+		}
+	}
+	return false
+}
+
+func intRemoved(target int, a []int) []int {
+	count := 0 // only remove the first instance
+	var result []int
+	for i := 0; i < len(a)-1; i++ {
+		if count == 0 && a[i] == target {
+			result = append(result, a[i])
+			count++
+		}
+	}
+	return result
+}
+
+// TODO: Tree Comparison
 
 func assertEmpty(t *testing.T, tree BinarySearchTree) {
 	t.Helper()
