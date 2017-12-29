@@ -197,6 +197,12 @@ func TestRemoveValueSimpleSuccess(t *testing.T) {
 		{dataValues: []int{2, 1}, target: 2, expectedTree: BinarySearchTree{Root: &Node{Data: 1}}, expectedTreeString: "1 "},
 		{dataValues: []int{2, 5}, target: 5, expectedTree: BinarySearchTree{Root: &Node{Data: 2}}, expectedTreeString: "2 "},
 		{dataValues: []int{2, 1}, target: 1, expectedTree: BinarySearchTree{Root: &Node{Data: 2}}, expectedTreeString: "2 "},
+		{dataValues: []int{2, 1, 5}, target: 2, expectedTree: BinarySearchTree{Root: &Node{Data: 5, left: &Node{Data: 1}}},
+			expectedTreeString: "5 1 "},
+		{dataValues: []int{2, 1, 5, 4}, target: 2, expectedTree: BinarySearchTree{
+			Root: &Node{Data: 5, left: &Node{Data: 1}, right: &Node{Data: 4}}}, expectedTreeString: "4 1 5 "},
+		{dataValues: []int{2, 1, 5, 4, 3}, target: 2, expectedTree: BinarySearchTree{
+			Root: &Node{Data: 5, left: &Node{Data: 1}, right: &Node{Data: 4, left: &Node{Data: 3}}}}, expectedTreeString: "3 1 5 4 "},
 	}
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("Remove %v from tree %v ", tc.target, tc.dataValues), func(t *testing.T) {

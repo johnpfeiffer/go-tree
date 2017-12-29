@@ -20,7 +20,7 @@ func (tree *BinarySearchTree) Display() string {
 	return Display(tree.Root)
 }
 
-// Display shows the node data and continues recursively
+// Display shows the node data and continues recursively (in pre-order)
 func Display(n *Node) string {
 	var s string
 	var b bytes.Buffer
@@ -36,6 +36,8 @@ func Display(n *Node) string {
 	}
 	return b.String() + s
 }
+
+// TODO: in-order and post-order display
 
 // Find returns the first node that has a matching key
 func (tree *BinarySearchTree) Find(target int) *Node {
@@ -115,10 +117,26 @@ func RemoveRoot(tree *BinarySearchTree) {
 	case tree.Root.right == nil && tree.Root.left == nil:
 		tree.Root = nil // if pointers then tree.Root.Data = nil to prevent memory leaks
 	case tree.Root.right != nil:
-		// Left Rotation may reduce the depth of the right subtree by one
-		if tree.Root.right.left == nil {
+		if tree.Root.right.left == nil { // simplest hoisting case, e.g. root to leaf: 1 2(root) 5 6 becomes 1 5(root) 6
+			originalRootLeft := tree.Root.left
 			tree.Root = tree.Root.right
+			tree.Root.left = originalRootLeft
+		} else { // more complex hoisting case, e.g. 1 2(root) 5 4 3 , need to find the left most, then fix right subtree
+			parent := tree.Root.right
+			for current := tree.Root.right; current.left != nil; current = current.left {
+				parent = current
+			}
+			originalRootLeft := tree.Root.left
+			originalRootRight := tree.Root.right
+			replacementRoot := parent.left
+
+			tree.Root = replacementRoot
+			parent.left = replacementRoot.right
+			replacementRoot.left = originalRootLeft
+			replacementRoot.right = originalRootRight
 		}
+		return
+
 	case tree.Root.left != nil:
 		if tree.Root.left.right == nil {
 			tree.Root = tree.Root.left
