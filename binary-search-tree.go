@@ -121,7 +121,7 @@ func RemoveRoot(tree *BinarySearchTree) {
 			originalRootLeft := tree.Root.left
 			tree.Root = tree.Root.right
 			tree.Root.left = originalRootLeft
-		} else { // more complex hoisting case, e.g. 1 2(root) 5 4 3 , need to find the left most, then fix right subtree
+		} else { // more complex hoisting case, e.g. 1 2(root) 5 4 3 , need to find the right subtree left most, then fix the right subtree
 			parent := tree.Root.right
 			for current := tree.Root.right; current.left != nil; current = current.left {
 				parent = current
@@ -138,9 +138,26 @@ func RemoveRoot(tree *BinarySearchTree) {
 		return
 
 	case tree.Root.left != nil:
-		if tree.Root.left.right == nil {
+		if tree.Root.left.right == nil { // simplest hoisting case, e.g. root to leaf: 0 1 2(root) 5 becomes 0 1(root) 5
+			originalRootRight := tree.Root.right
 			tree.Root = tree.Root.left
+			tree.Root.right = originalRootRight
+		} else { // more complex hoisting case, e.g. 1 0 2(root) 5 , need to find the left subtree right most, then fix the left subtree
+			parent := tree.Root.left
+			for current := tree.Root.left; current.right != nil; current = current.right {
+				parent = current
+			}
+			originalRootLeft := tree.Root.left
+			originalRootRight := tree.Root.right
+			replacementRoot := parent.right
+
+			tree.Root = replacementRoot
+			parent.right = replacementRoot.left
+			replacementRoot.left = originalRootLeft
+			replacementRoot.right = originalRootRight
 		}
+		return
+
 	default:
 		fmt.Println("ERROR should never reach here")
 	}

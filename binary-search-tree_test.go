@@ -199,10 +199,18 @@ func TestRemoveValueSimpleSuccess(t *testing.T) {
 		{dataValues: []int{2, 1}, target: 1, expectedTree: BinarySearchTree{Root: &Node{Data: 2}}, expectedTreeString: "2 "},
 		{dataValues: []int{2, 1, 5}, target: 2, expectedTree: BinarySearchTree{Root: &Node{Data: 5, left: &Node{Data: 1}}},
 			expectedTreeString: "5 1 "},
+		{dataValues: []int{2, 5, 1}, target: 2, expectedTree: BinarySearchTree{Root: &Node{Data: 5, left: &Node{Data: 1}}},
+			expectedTreeString: "5 1 "},
+
+		{dataValues: []int{2, 1, 0}, target: 2, expectedTree: BinarySearchTree{Root: &Node{Data: 1, left: &Node{Data: 0}}},
+			expectedTreeString: "1 0 "},
+		{dataValues: []int{2, 0, 1}, target: 2, expectedTree: BinarySearchTree{Root: &Node{Data: 1, left: &Node{Data: 0}}},
+			expectedTreeString: "1 0 "},
+
 		{dataValues: []int{2, 1, 5, 4}, target: 2, expectedTree: BinarySearchTree{
-			Root: &Node{Data: 5, left: &Node{Data: 1}, right: &Node{Data: 4}}}, expectedTreeString: "4 1 5 "},
+			Root: &Node{Data: 4, left: &Node{Data: 1}, right: &Node{Data: 5}}}, expectedTreeString: "4 1 5 "},
 		{dataValues: []int{2, 1, 5, 4, 3}, target: 2, expectedTree: BinarySearchTree{
-			Root: &Node{Data: 5, left: &Node{Data: 1}, right: &Node{Data: 4, left: &Node{Data: 3}}}}, expectedTreeString: "3 1 5 4 "},
+			Root: &Node{Data: 3, left: &Node{Data: 1}, right: &Node{Data: 5, left: &Node{Data: 4}}}}, expectedTreeString: "3 1 5 4 "},
 	}
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("Remove %v from tree %v ", tc.target, tc.dataValues), func(t *testing.T) {
@@ -214,6 +222,9 @@ func TestRemoveValueSimpleSuccess(t *testing.T) {
 				assertEmpty(t, tree)
 			case 2:
 				assertLeafNode(t, tree.Root.Data, tree.Root)
+			}
+			if tc.expectedTree.Display() != tc.expectedTreeString {
+				t.Error("\nTest ERROR: Expected tree (string):", tc.expectedTreeString, "\nReceived: ", tc.expectedTree.Display())
 			}
 			if tc.expectedTreeString != tree.Display() {
 				t.Error("\nExpected tree (string):", tc.expectedTreeString, "\nReceived: ", tree.Display())
