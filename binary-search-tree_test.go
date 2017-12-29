@@ -193,10 +193,10 @@ func TestRemoveValueSimpleSuccess(t *testing.T) {
 		expectedTreeString string
 	}{
 		{dataValues: []int{2}, target: 2, expectedTree: BinarySearchTree{Root: nil}, expectedTreeString: ""},
-		{dataValues: []int{2, 3}, target: 2, expectedTree: BinarySearchTree{Root: &Node{Data: 2}}, expectedTreeString: "2 "},
+		{dataValues: []int{2, 5}, target: 2, expectedTree: BinarySearchTree{Root: &Node{Data: 5}}, expectedTreeString: "5 "},
 		{dataValues: []int{2, 1}, target: 2, expectedTree: BinarySearchTree{Root: &Node{Data: 1}}, expectedTreeString: "1 "},
 
-		// {dataValues: []int{2, 5}, tree: BinarySearchTree{Root: &Node{Data: 2, right: &Node{Data: 5}}}, treeString: "2 5 "},
+		// {dataValues: []int{2, 3}, target: 3, expectedTree: BinarySearchTree{Root: &Node{Data: 2}}, expectedTreeString: "2 "},
 		// // perfect tree /\
 		// {dataValues: []int{2, 1, 5}, tree: BinarySearchTree{Root: &Node{Data: 2, left: &Node{Data: 1}, right: &Node{Data: 5}}},
 		// 	treeString: "2 1 5 "},
@@ -215,7 +215,7 @@ func TestRemoveValueSimpleSuccess(t *testing.T) {
 		// {dataValues: []int{2, 0, 1}, target: 1, expectedLeftChild: nil, expectedRightChild: nil},
 	}
 	for _, tc := range testCases {
-		t.Run(fmt.Sprintf("Find %v in tree %v ", tc.target, tc.dataValues), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Remove %v from tree %v ", tc.target, tc.dataValues), func(t *testing.T) {
 			tree := createBST(tc.dataValues)
 			tree.RemoveValue(tc.target)
 			switch len(tc.dataValues) {

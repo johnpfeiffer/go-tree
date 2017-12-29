@@ -85,9 +85,20 @@ func (tree *BinarySearchTree) RemoveValue(target int) {
 		return
 	}
 	if tree.Root.Data == target {
-		if tree.Root.right != nil {
-			// TODO: rotate right
+		switch {
+		case tree.Root.right == nil && tree.Root.left == nil:
+			tree.Root = nil // if pointers then tree.Root.Data = nil to prevent memory leaks
+		case tree.Root.right != nil:
+			// Left Rotation may reduce the depth of the right subtree by one
+			if tree.Root.right.left == nil {
+				tree.Root = tree.Root.right
+			}
+		case tree.Root.left != nil:
+			if tree.Root.left.right == nil {
+				tree.Root = tree.Root.left
+			}
+		default:
+			fmt.Println("ERROR should never reach here")
 		}
-		tree.Root = nil
 	}
 }
