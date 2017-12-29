@@ -37,6 +37,20 @@ func Display(n *Node) string {
 	return b.String() + s
 }
 
+// DisplayOrdered shows the node data and continues recursively (in pre-order)
+func DisplayOrdered(n *Node) {
+	if n == nil {
+		return
+	}
+	if n.left != nil {
+		DisplayOrdered(n.left)
+	}
+	fmt.Println(n.Data)
+	if n.right != nil {
+		DisplayOrdered(n.right)
+	}
+}
+
 // TODO: in-order and post-order display
 
 // Find returns the first node that has a matching key

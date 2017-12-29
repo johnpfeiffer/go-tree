@@ -21,5 +21,7 @@ func main() {
 	fmt.Printf("%#v\n", bst.Find(-2))
 
 	bst.InsertValue(1)
-	fmt.Println(bst.Display())
+	fmt.Println("pre-order", bst.Display())
+	fmt.Println("in order:")
+	DisplayOrdered(bst.Root)
 }
