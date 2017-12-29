@@ -80,25 +80,78 @@ func (tree *BinarySearchTree) InsertValue(target int) {
 
 // RemoveValue removes the first node with the matching data
 func (tree *BinarySearchTree) RemoveValue(target int) {
-	current := tree.Root
-	if current == nil {
+	if tree.Root == nil {
 		return
 	}
 	if tree.Root.Data == target {
+		RemoveRoot(tree)
+		return
+	}
+	current := tree.Root
+	parent := current
+	for {
 		switch {
-		case tree.Root.right == nil && tree.Root.left == nil:
-			tree.Root = nil // if pointers then tree.Root.Data = nil to prevent memory leaks
-		case tree.Root.right != nil:
-			// Left Rotation may reduce the depth of the right subtree by one
-			if tree.Root.right.left == nil {
-				tree.Root = tree.Root.right
-			}
-		case tree.Root.left != nil:
-			if tree.Root.left.right == nil {
-				tree.Root = tree.Root.left
-			}
-		default:
-			fmt.Println("ERROR should never reach here")
+		case current == nil:
+			return
+		case current.Data == target:
+			RemoveNode(current, parent)
+			return
+		case current.Data < target:
+			parent = current
+			current = current.right
+		case current.Data > target:
+			parent = current
+			current = current.left
 		}
+	}
+}
+
+// RemoveRoot handles the special case of removing the root node
+func RemoveRoot(tree *BinarySearchTree) {
+	if tree.Root == nil {
+		return
+	}
+	switch {
+	case tree.Root.right == nil && tree.Root.left == nil:
+		tree.Root = nil // if pointers then tree.Root.Data = nil to prevent memory leaks
+	case tree.Root.right != nil:
+		// Left Rotation may reduce the depth of the right subtree by one
+		if tree.Root.right.left == nil {
+			tree.Root = tree.Root.right
+		}
+	case tree.Root.left != nil:
+		if tree.Root.left.right == nil {
+			tree.Root = tree.Root.left
+		}
+	default:
+		fmt.Println("ERROR should never reach here")
+	}
+}
+
+// RemoveNode also handles the special case of removing a leaf node
+func RemoveNode(node, parent *Node) {
+	if node == nil || parent == nil {
+		fmt.Println("ERROR should never reach here with node or parent as nil")
+		return
+	}
+	switch {
+	case parent.left == node:
+		if node.left != nil {
+			parent.left = node.left // hoist the remaining child, it is ok if we re-assign nil
+			node.left = nil         // reminder that for pointers node.Data = nil prevents memory leaks
+		} else {
+			parent.left = node.right // simple logic as we do not care if we re-assign nil
+			node.right = nil
+		}
+	case parent.right == node:
+		if node.left != nil {
+			parent.right = node.left
+			node.left = nil
+		} else {
+			parent.right = node.right
+			node.right = nil
+		}
+	default:
+		fmt.Println("ERROR should never reach here with parent not matching the child node")
 	}
 }

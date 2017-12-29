@@ -195,24 +195,8 @@ func TestRemoveValueSimpleSuccess(t *testing.T) {
 		{dataValues: []int{2}, target: 2, expectedTree: BinarySearchTree{Root: nil}, expectedTreeString: ""},
 		{dataValues: []int{2, 5}, target: 2, expectedTree: BinarySearchTree{Root: &Node{Data: 5}}, expectedTreeString: "5 "},
 		{dataValues: []int{2, 1}, target: 2, expectedTree: BinarySearchTree{Root: &Node{Data: 1}}, expectedTreeString: "1 "},
-
-		// {dataValues: []int{2, 3}, target: 3, expectedTree: BinarySearchTree{Root: &Node{Data: 2}}, expectedTreeString: "2 "},
-		// // perfect tree /\
-		// {dataValues: []int{2, 1, 5}, tree: BinarySearchTree{Root: &Node{Data: 2, left: &Node{Data: 1}, right: &Node{Data: 5}}},
-		// 	treeString: "2 1 5 "},
-
-		// {dataValues: []int{1, 2}, target: 2},
-
-		// {dataValues: []int{2, 1}, target: 2, expectedLeftChild: &Node{Data: 1}, expectedRightChild: nil},
-		// {dataValues: []int{2, 1, 3}, target: 2, expectedLeftChild: &Node{Data: 1}, expectedRightChild: &Node{Data: 3}},
-		// {dataValues: []int{2, 1}, target: 1, expectedLeftChild: nil, expectedRightChild: nil},
-		// {dataValues: []int{2, 3}, target: 3, expectedLeftChild: nil, expectedRightChild: nil},
-
-		// {dataValues: []int{2, 1, -1}, target: 2, expectedLeftChild: &Node{Data: 1}, expectedRightChild: nil},
-		// {dataValues: []int{2, 1, -1}, target: 1, expectedLeftChild: &Node{Data: -1}, expectedRightChild: nil},
-		// {dataValues: []int{2, 0, 1}, target: 0, expectedLeftChild: nil, expectedRightChild: &Node{Data: 1}},
-		// {dataValues: []int{2, 1, -1}, target: -1, expectedLeftChild: nil, expectedRightChild: nil},
-		// {dataValues: []int{2, 0, 1}, target: 1, expectedLeftChild: nil, expectedRightChild: nil},
+		{dataValues: []int{2, 5}, target: 5, expectedTree: BinarySearchTree{Root: &Node{Data: 2}}, expectedTreeString: "2 "},
+		{dataValues: []int{2, 1}, target: 1, expectedTree: BinarySearchTree{Root: &Node{Data: 2}}, expectedTreeString: "2 "},
 	}
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("Remove %v from tree %v ", tc.target, tc.dataValues), func(t *testing.T) {
@@ -225,9 +209,6 @@ func TestRemoveValueSimpleSuccess(t *testing.T) {
 			case 2:
 				assertLeafNode(t, tree.Root.Data, tree.Root)
 			}
-
-			// expectedReducedDataValues := intRemoved(tc.target, tc.dataValues)
-			// expectedTree := createBST(expectedReducedDataValues)
 			if tc.expectedTreeString != tree.Display() {
 				t.Error("\nExpected tree (string):", tc.expectedTreeString, "\nReceived: ", tree.Display())
 			}
