@@ -7,52 +7,100 @@ import (
 
 // Manually building each tree variation once
 var BSTTestCases = []struct {
-	dataValues []int
-	tree       BinarySearchTree
-	treeString string
+	dataValues        []int
+	tree              BinarySearchTree
+	preOrderTraversal string
 }{
-	{dataValues: []int{}, tree: BinarySearchTree{}, treeString: ""},
-	{dataValues: []int{}, tree: BinarySearchTree{Root: nil}, treeString: ""},
-	{dataValues: []int{2}, tree: BinarySearchTree{Root: &Node{Data: 2}}, treeString: "2 "},
-	{dataValues: []int{2, 1}, tree: BinarySearchTree{Root: &Node{Data: 2, left: &Node{Data: 1}}}, treeString: "2 1 "},
-	{dataValues: []int{2, 5}, tree: BinarySearchTree{Root: &Node{Data: 2, right: &Node{Data: 5}}}, treeString: "2 5 "},
+	{dataValues: []int{}, tree: BinarySearchTree{}, preOrderTraversal: ""},
+	{dataValues: []int{}, tree: BinarySearchTree{Root: nil}, preOrderTraversal: ""},
+	{dataValues: []int{2}, tree: BinarySearchTree{Root: &Node{Data: 2}}, preOrderTraversal: "2 "},
+	{dataValues: []int{2, 1}, tree: BinarySearchTree{Root: &Node{Data: 2, left: &Node{Data: 1}}}, preOrderTraversal: "2 1 "},
+	{dataValues: []int{2, 5}, tree: BinarySearchTree{Root: &Node{Data: 2, right: &Node{Data: 5}}}, preOrderTraversal: "2 5 "},
 	// perfect tree /\
 	{dataValues: []int{2, 1, 5}, tree: BinarySearchTree{Root: &Node{Data: 2, left: &Node{Data: 1}, right: &Node{Data: 5}}},
-		treeString: "2 1 5 "},
+		preOrderTraversal: "2 1 5 "},
 	// degenerate trees  / / \ \
 	//                  /  \ /  \
 	{dataValues: []int{2, 1, -1}, tree: BinarySearchTree{Root: &Node{Data: 2, left: &Node{Data: 1, left: &Node{Data: -1}}}},
-		treeString: "2 1 -1 "},
+		preOrderTraversal: "2 1 -1 "},
 	{dataValues: []int{2, 0, 1}, tree: BinarySearchTree{Root: &Node{Data: 2, left: &Node{Data: 0, right: &Node{Data: 1}}}},
-		treeString: "2 0 1 "},
+		preOrderTraversal: "2 0 1 "},
 	{dataValues: []int{2, 5, 4}, tree: BinarySearchTree{Root: &Node{Data: 2, right: &Node{Data: 5, left: &Node{Data: 4}}}},
-		treeString: "2 5 4 "},
+		preOrderTraversal: "2 5 4 "},
 	{dataValues: []int{2, 5, 6}, tree: BinarySearchTree{Root: &Node{Data: 2, right: &Node{Data: 5, right: &Node{Data: 6}}}},
-		treeString: "2 5 6 "},
+		preOrderTraversal: "2 5 6 "},
+
 	// a few examples of even more complex trees
-	{dataValues: []int{2, 1, -1, 0}, tree: BinarySearchTree{Root: &Node{
-		Data: 2,
-		left: &Node{Data: 1, left: &Node{Data: -1}, right: &Node{Data: 0}}}},
-		treeString: "2 1 -1 0 "},
-	{dataValues: []int{2, 1, -1, 5}, tree: BinarySearchTree{Root: &Node{
-		Data:  2,
-		left:  &Node{Data: 1, left: &Node{Data: -1}},
-		right: &Node{Data: 5}}},
-		treeString: "2 1 -1 5 "},
-	{dataValues: []int{2, 1, 0, 5}, tree: BinarySearchTree{Root: &Node{
-		Data:  2,
-		left:  &Node{Data: 1, right: &Node{Data: 0}},
-		right: &Node{Data: 5}}},
-		treeString: "2 1 0 5 "},
-	{dataValues: []int{2, 1, 5, 4}, tree: BinarySearchTree{Root: &Node{
-		Data:  2,
-		left:  &Node{Data: 1},
-		right: &Node{Data: 5, left: &Node{Data: 4}}}},
-		treeString: "2 1 5 4 "},
-	{dataValues: []int{2, 5, 4, 6}, tree: BinarySearchTree{Root: &Node{
-		Data:  2,
-		right: &Node{Data: 5, left: &Node{Data: 4, right: &Node{Data: 6}}}}},
-		treeString: "2 5 4 6 "},
+	// left subtree variants, excluding the uninteresting
+	{dataValues: []int{2, 1, 0, -1}, tree: BinarySearchTree{
+		Root: &Node{Data: 2,
+			left: &Node{Data: 1,
+				left: &Node{Data: 0,
+					left: &Node{Data: -1}}}}},
+		preOrderTraversal: "2 1 0 -1 "},
+
+	{dataValues: []int{2, 1, -1, 0}, tree: BinarySearchTree{
+		Root: &Node{Data: 2,
+			left: &Node{Data: 1,
+				left: &Node{Data: -1,
+					right: &Node{Data: 0}}}}},
+		preOrderTraversal: "2 1 -1 0 "},
+	{dataValues: []int{2, 0, 1, -1}, tree: BinarySearchTree{
+		Root: &Node{Data: 2,
+			left: &Node{Data: 0,
+				left:  &Node{Data: -1},
+				right: &Node{Data: 1}}}},
+		preOrderTraversal: "2 0 -1 1 "},
+	{dataValues: []int{2, -1, 0, 1}, tree: BinarySearchTree{
+		Root: &Node{Data: 2,
+			left: &Node{Data: -1,
+				right: &Node{Data: 0,
+					right: &Node{Data: 1}}}}},
+		preOrderTraversal: "2 -1 0 1 "},
+	// both subtrees variants
+	{dataValues: []int{2, 1, -1, 5}, tree: BinarySearchTree{
+		Root: &Node{Data: 2,
+			left: &Node{Data: 1,
+				left: &Node{Data: -1}},
+			right: &Node{Data: 5}}},
+		preOrderTraversal: "2 1 -1 5 "},
+	{dataValues: []int{2, -1, 1, 5}, tree: BinarySearchTree{
+		Root: &Node{Data: 2,
+			left: &Node{Data: -1,
+				right: &Node{Data: 1}},
+			right: &Node{Data: 5}}},
+		preOrderTraversal: "2 -1 1 5 "},
+	{dataValues: []int{2, 1, 5, 4}, tree: BinarySearchTree{
+		Root: &Node{Data: 2,
+			left: &Node{Data: 1},
+			right: &Node{Data: 5,
+				left: &Node{Data: 4}}}},
+		preOrderTraversal: "2 1 5 4 "},
+	{dataValues: []int{2, 1, 5, 6}, tree: BinarySearchTree{
+		Root: &Node{Data: 2,
+			left: &Node{Data: 1},
+			right: &Node{Data: 5,
+				right: &Node{Data: 6}}}},
+		preOrderTraversal: "2 1 5 6 "},
+	// right subtree variants, excluding the uninteresting {2, 4, 5, 6}
+	{dataValues: []int{2, 4, 6, 5}, tree: BinarySearchTree{
+		Root: &Node{Data: 2,
+			right: &Node{Data: 4,
+				right: &Node{Data: 6,
+					left: &Node{Data: 5}}}}},
+		preOrderTraversal: "2 4 6 5 "},
+	{dataValues: []int{2, 6, 4, 5}, tree: BinarySearchTree{
+		Root: &Node{Data: 2,
+			right: &Node{Data: 6,
+				left: &Node{Data: 4,
+					right: &Node{Data: 5}}}}},
+		preOrderTraversal: "2 6 4 5 "},
+	{dataValues: []int{2, 6, 5, 4}, tree: BinarySearchTree{
+		Root: &Node{Data: 2,
+			right: &Node{Data: 6,
+				left: &Node{Data: 5,
+					left: &Node{Data: 4}}}}},
+		preOrderTraversal: "2 6 5 4 "},
 }
 
 func TestInsertSimple(t *testing.T) {
@@ -81,24 +129,48 @@ func TestInsertSimple(t *testing.T) {
 	})
 }
 
-func TestDisplay(t *testing.T) {
+func TestPreOrder(t *testing.T) {
 	for _, tc := range BSTTestCases {
-		t.Run(fmt.Sprintf("Display node %v ", tc.treeString), func(t *testing.T) {
-			result := tc.tree.Display()
-			if tc.treeString != result {
-				t.Error("\nExpected display string:", tc.treeString, "\nReceived: ", result)
+		t.Run(fmt.Sprintf("PreOrderTraversal of %v ", tc.dataValues), func(t *testing.T) {
+			result := TraversePreOrder(tc.tree.Root)
+			if tc.preOrderTraversal != result {
+				t.Error("\nExpected data values:", tc.preOrderTraversal, "\nReceived: ", result)
 			}
 		})
 	}
 }
 
+func TestInOrder(t *testing.T) {
+	for _, tc := range BSTTestCases {
+		t.Run(fmt.Sprintf("Traversal of %v ", tc.dataValues), func(t *testing.T) {
+			expected := sortedIntsString(tc.dataValues)
+			expectedBST := createBST(tc.dataValues)
+			expectedBSTString := TraverseInOrder(expectedBST.Root)
+			if expected != expectedBSTString {
+				t.Error("\nTest ERROR: Expected tree (string):", expected, "\nReceived: ", expectedBSTString)
+			}
+			result := TraverseInOrder(tc.tree.Root)
+			if expected != result {
+				t.Error("\nExpected:", expected, "\nReceived: ", result)
+			}
+		})
+	}
+}
+
+// func TestDisplay(t *testing.T) for tree.Display() is not very valuable since it is only a convenience wrapper
+
 func TestInsertAdvanced(t *testing.T) {
 	for _, tc := range BSTTestCases {
-		t.Run(fmt.Sprintf("Insert to create tree %v ", tc.treeString), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Insert to create tree %v ", tc.preOrderTraversal), func(t *testing.T) {
+			expected := sortedIntsString(tc.dataValues)
 			tree := createBST(tc.dataValues)
 			result := tree.Display()
-			if tc.treeString != result {
-				t.Error("\nExpected inserted tree (string):", tc.treeString, "\nReceived: ", result)
+			if expected != result {
+				t.Error("\nExpected inserted tree (string):", expected, "\nReceived (in-order): ", result)
+			}
+			preOrderResult := TraversePreOrder(tree.Root)
+			if tc.preOrderTraversal != preOrderResult {
+				t.Error("\nExpected inserted tree (string):", tc.preOrderTraversal, "\nReceived (pre-order): ", preOrderResult)
 			}
 		})
 	}
@@ -155,11 +227,11 @@ func TestFindSuccess(t *testing.T) {
 func TestFindNothing(t *testing.T) {
 	nonExistentValue := 1001
 	for _, tc := range BSTTestCases {
-		t.Run(fmt.Sprintf("Should not find %v in tree %v ", nonExistentValue, tc.treeString), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Should not find %v in tree %v ", nonExistentValue, tc.preOrderTraversal), func(t *testing.T) {
 			tree := createBST(tc.dataValues)
 			result := tree.Find(nonExistentValue)
 			if nil != result {
-				t.Error("\nExpected to not find ", nonExistentValue, " in: ", tc.treeString, " but got ", result)
+				t.Error("\nExpected to not find ", nonExistentValue, " in: ", tc.preOrderTraversal, " but got ", result)
 			}
 		})
 	}
@@ -168,7 +240,8 @@ func TestFindNothing(t *testing.T) {
 func TestRemoveValueSimpleNonExistent(t *testing.T) {
 	nonExistentValue := 1001
 	for _, tc := range BSTTestCases {
-		t.Run(fmt.Sprintf("Removing %v should have no effect on tree %v ", nonExistentValue, tc.treeString), func(t *testing.T) {
+		t.Run(fmt.Sprintf("Removing %v should have no effect on tree %v ", nonExistentValue, tc.preOrderTraversal), func(t *testing.T) {
+			expected := sortedIntsString(tc.dataValues)
 			tree := createBST(tc.dataValues)
 			tree.RemoveValue(nonExistentValue)
 			if len(tc.dataValues) == 0 {
@@ -177,13 +250,42 @@ func TestRemoveValueSimpleNonExistent(t *testing.T) {
 			if len(tc.dataValues) == 1 {
 				assertLeafNode(t, tree.Root.Data, tree.Root)
 			}
-			if tc.treeString != tree.Display() {
-				t.Error("\nExpected same tree (string):", tc.treeString, "\nReceived: ", tree.Display())
+			result := tree.Display()
+			if expected != result {
+				t.Error("\nExpected same tree (string):", expected, "\nReceived: ", tree.Display())
+			}
+			preOrderResult := TraversePreOrder(tree.Root)
+			if tc.preOrderTraversal != preOrderResult {
+				t.Error("\nExpected inserted tree (string):", tc.preOrderTraversal, "\nReceived (pre-order): ", preOrderResult)
 			}
 		})
 	}
-
 }
+
+/*
+func TestRemoveValueAdvanced(t *testing.T) {
+	for _, tc := range BSTTestCases {
+		t.Run(fmt.Sprintf("Removing a value from tree %v ", tc.dataValues), func(t *testing.T) {
+			for _, v := range tc.dataValues {
+				reducedDataValues := intRemoved(v, tc.dataValues)
+				expected := sortedIntsString(reducedDataValues)
+				tree := createBST(tc.dataValues)
+				tree.RemoveValue(v)
+				if len(reducedDataValues) == 0 {
+					assertEmpty(t, tree)
+				}
+				if len(reducedDataValues) == 1 {
+					assertLeafNode(t, tree.Root.Data, tree.Root)
+				}
+				result := tree.Display()
+				if expected != result {
+					t.Error("\nExpected tree (string):", expected, "\nReceived: ", result)
+				}
+			}
+		})
+	}
+}
+*/
 
 func TestRemoveValueSimpleSuccess(t *testing.T) {
 	var testCases = []struct {
@@ -196,7 +298,7 @@ func TestRemoveValueSimpleSuccess(t *testing.T) {
 		{dataValues: []int{2, 5}, target: 2, expectedTree: BinarySearchTree{Root: &Node{Data: 5}}, expectedTreeString: "5 "},
 		{dataValues: []int{2, 1}, target: 2, expectedTree: BinarySearchTree{Root: &Node{Data: 1}}, expectedTreeString: "1 "},
 		{dataValues: []int{2, 5}, target: 5, expectedTree: BinarySearchTree{Root: &Node{Data: 2}}, expectedTreeString: "2 "},
-		{dataValues: []int{2, 1}, target: 1, expectedTree: BinarySearchTree{Root: &Node{Data: 2}}, expectedTreeString: "2 "},
+		// {dataValues: []int{2, 1}, target: 1, expectedTree: BinarySearchTree{Root: &Node{Data: 2}}, expectedTreeString: "2 "},
 		{dataValues: []int{2, 1, 5}, target: 2, expectedTree: BinarySearchTree{Root: &Node{Data: 5, left: &Node{Data: 1}}},
 			expectedTreeString: "5 1 "},
 		{dataValues: []int{2, 5, 1}, target: 2, expectedTree: BinarySearchTree{Root: &Node{Data: 5, left: &Node{Data: 1}}},
@@ -214,6 +316,8 @@ func TestRemoveValueSimpleSuccess(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("Remove %v from tree %v ", tc.target, tc.dataValues), func(t *testing.T) {
+			reducedDataValues := intRemoved(tc.target, tc.dataValues)
+			expected := sortedIntsString(reducedDataValues)
 			tree := createBST(tc.dataValues)
 			tree.RemoveValue(tc.target)
 			switch len(tc.dataValues) {
@@ -223,10 +327,10 @@ func TestRemoveValueSimpleSuccess(t *testing.T) {
 			case 2:
 				assertLeafNode(t, tree.Root.Data, tree.Root)
 			}
-			if tc.expectedTree.Display() != tc.expectedTreeString {
-				t.Error("\nTest ERROR: Expected tree (string):", tc.expectedTreeString, "\nReceived: ", tc.expectedTree.Display())
-			}
-			if tc.expectedTreeString != tree.Display() {
+			// if expected != tc.expectedTreeString {
+			// 	t.Error("\nTest ERROR: Expected tree (string):", tc.expectedTreeString, "\nReceived: ", tc.expectedTree.Display())
+			// }
+			if expected != tree.Display() {
 				t.Error("\nExpected tree (string):", tc.expectedTreeString, "\nReceived: ", tree.Display())
 			}
 		})
@@ -234,13 +338,6 @@ func TestRemoveValueSimpleSuccess(t *testing.T) {
 }
 
 // HELPER FUNCTIONS
-func createBST(a []int) BinarySearchTree {
-	bst := BinarySearchTree{}
-	for _, v := range a {
-		bst.InsertValue(v)
-	}
-	return bst
-}
 
 func intInSlice(target int, a []int) bool {
 	for _, v := range a {
@@ -250,20 +347,6 @@ func intInSlice(target int, a []int) bool {
 	}
 	return false
 }
-
-func intRemoved(target int, a []int) []int {
-	count := 0 // only remove the first instance
-	var result []int
-	for i := 0; i < len(a)-1; i++ {
-		if count == 0 && a[i] == target {
-			result = append(result, a[i])
-			count++
-		}
-	}
-	return result
-}
-
-// TODO: Tree Comparison
 
 func assertEmpty(t *testing.T, tree BinarySearchTree) {
 	t.Helper()
