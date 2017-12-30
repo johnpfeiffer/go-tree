@@ -460,7 +460,8 @@ func TestReplaceLeft(t *testing.T) {
 		dataValues []int
 		target     int
 	}{
-		{dataValues: []int{1, -1, 0}, target: -1},
+		{dataValues: []int{2, 1, 0}, target: 1},
+		// {dataValues: []int{1, -1, 0}, target: -1},
 		// {dataValues: []int{4, 1, -1, 0}, target: 1},
 	}
 	for _, tc := range testCases {
@@ -469,14 +470,16 @@ func TestReplaceLeft(t *testing.T) {
 			expected := sortedIntsString(reducedDataValues)
 			tree := createBST(tc.dataValues)
 
-			// in order to remove -1
-			// I need -1's parent
-			// then I need the replacement's parent
-
-			// replacementParent := FindRightMostParent()
-			// replaceLeft()
-			// replaceLeft(tree.Root, tree.Root.left.left)
-
+			removeeParent := FindParent(tc.target, tree.Root)
+			if removeeParent.left != nil && removeeParent.left.Data == tc.target {
+				replacementParent := FindRightMostParent(removeeParent.left)
+				fmt.Println("JOHN", replacementParent, removeeParent)
+				replaceLeft(removeeParent, replacementParent)
+			}
+			if removeeParent.right != nil && removeeParent.right.Data == tc.target {
+				// replacementParent := FindLeftMostParent(removeeParent.right)
+				// replaceRight(removeeParent, replacementParent)
+			}
 			if expected != tree.Display() {
 				t.Error("\nExpected tree (string):", expected, "\nReceived: ", tree.Display())
 			}

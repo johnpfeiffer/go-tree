@@ -241,7 +241,6 @@ func replaceLeft(removeeParent, replacementParent *Node) {
 
 	replacement := replacementParent.right
 	removee := removeeParent.left
-	fmt.Println("J", removee.Data)
 	removeeLeft := removee.left
 	removeeRight := removee.right
 	if removeeRight == replacement { // edge case where a child replaces a parent
