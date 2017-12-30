@@ -178,22 +178,22 @@ func TestInsertAdvanced(t *testing.T) {
 
 func TestFindSuccess(t *testing.T) {
 	var testCases = []struct {
-		dataValues         []int
-		target             int
-		expectedLeftChild  *Node
-		expectedRightChild *Node
+		dataValues    []int
+		target        int
+		expectedLeft  *Node
+		expectedRight *Node
 	}{
-		{dataValues: []int{2}, target: 2, expectedLeftChild: nil, expectedRightChild: nil},
-		{dataValues: []int{2, 1}, target: 2, expectedLeftChild: &Node{Data: 1}, expectedRightChild: nil},
-		{dataValues: []int{2, 1, 3}, target: 2, expectedLeftChild: &Node{Data: 1}, expectedRightChild: &Node{Data: 3}},
-		{dataValues: []int{2, 1}, target: 1, expectedLeftChild: nil, expectedRightChild: nil},
-		{dataValues: []int{2, 3}, target: 3, expectedLeftChild: nil, expectedRightChild: nil},
+		{dataValues: []int{2}, target: 2, expectedLeft: nil, expectedRight: nil},
+		{dataValues: []int{2, 1}, target: 2, expectedLeft: &Node{Data: 1}, expectedRight: nil},
+		{dataValues: []int{2, 1, 3}, target: 2, expectedLeft: &Node{Data: 1}, expectedRight: &Node{Data: 3}},
+		{dataValues: []int{2, 1}, target: 1, expectedLeft: nil, expectedRight: nil},
+		{dataValues: []int{2, 3}, target: 3, expectedLeft: nil, expectedRight: nil},
 
-		{dataValues: []int{2, 1, -1}, target: 2, expectedLeftChild: &Node{Data: 1}, expectedRightChild: nil},
-		{dataValues: []int{2, 1, -1}, target: 1, expectedLeftChild: &Node{Data: -1}, expectedRightChild: nil},
-		{dataValues: []int{2, 0, 1}, target: 0, expectedLeftChild: nil, expectedRightChild: &Node{Data: 1}},
-		{dataValues: []int{2, 1, -1}, target: -1, expectedLeftChild: nil, expectedRightChild: nil},
-		{dataValues: []int{2, 0, 1}, target: 1, expectedLeftChild: nil, expectedRightChild: nil},
+		{dataValues: []int{2, 1, -1}, target: 2, expectedLeft: &Node{Data: 1}, expectedRight: nil},
+		{dataValues: []int{2, 1, -1}, target: 1, expectedLeft: &Node{Data: -1}, expectedRight: nil},
+		{dataValues: []int{2, 0, 1}, target: 0, expectedLeft: nil, expectedRight: &Node{Data: 1}},
+		{dataValues: []int{2, 1, -1}, target: -1, expectedLeft: nil, expectedRight: nil},
+		{dataValues: []int{2, 0, 1}, target: 1, expectedLeft: nil, expectedRight: nil},
 	}
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("Find %v in tree %v ", tc.target, tc.dataValues), func(t *testing.T) {
@@ -202,24 +202,72 @@ func TestFindSuccess(t *testing.T) {
 			if tc.target != result.Data {
 				t.Error("\nExpected data:", tc.target, "\nReceived node with data: ", result.Data)
 			}
-			if tc.expectedLeftChild == nil {
-				if result.left != nil {
-					t.Error("\nExpected left child nil but received node with left child data: ", result.left.Data)
-				}
-			} else {
-				if tc.expectedLeftChild.Data != result.left.Data {
-					t.Error("\nExpected left child data:", tc.expectedLeftChild.Data, "\nReceived node with left child data: ", result.left.Data)
-				}
+			assertNode(t, tc.expectedLeft, result.left, "left")
+			assertNode(t, tc.expectedRight, result.right, "right")
+		})
+	}
+}
+
+func TestFindRightMostParent(t *testing.T) {
+	var testCases = []struct {
+		dataValues    []int
+		expectedData  int
+		expectedLeft  *Node
+		expectedRight *Node
+	}{
+		{dataValues: []int{2}, expectedData: 2, expectedLeft: nil, expectedRight: nil},
+		{dataValues: []int{2, 1}, expectedData: 2, expectedLeft: &Node{Data: 1}, expectedRight: nil},
+		{dataValues: []int{2, 1, 3}, expectedData: 2, expectedLeft: &Node{Data: 1}, expectedRight: &Node{Data: 3}},
+		{dataValues: []int{2, 4, 3}, expectedData: 2, expectedLeft: nil, expectedRight: &Node{Data: 4}},
+		{dataValues: []int{2, 5, 4, 3}, expectedData: 2, expectedLeft: nil, expectedRight: &Node{Data: 5}},
+		{dataValues: []int{2, 5, 3, 4}, expectedData: 2, expectedLeft: nil, expectedRight: &Node{Data: 5}},
+
+		{dataValues: []int{2, 3, 4}, expectedData: 3, expectedLeft: nil, expectedRight: &Node{Data: 4}},
+		{dataValues: []int{2, 3, 5, 4}, expectedData: 3, expectedLeft: nil, expectedRight: &Node{Data: 5}},
+		{dataValues: []int{2, 1, 0, 3, 4}, expectedData: 3, expectedLeft: nil, expectedRight: &Node{Data: 4}},
+	}
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("from tree %v ", tc.dataValues), func(t *testing.T) {
+			tree := createBST(tc.dataValues)
+			result := FindRightMostParent(tree.Root)
+			if tc.expectedData != result.Data {
+				t.Error("\nExpected parent data:", tc.expectedData, "\nReceived: ", result.Data)
 			}
-			if tc.expectedRightChild == nil {
-				if result.right != nil {
-					t.Error("\nExpected right child nil but received node with right child data: ", result.right.Data)
-				}
-			} else {
-				if tc.expectedRightChild.Data != result.right.Data {
-					t.Error("\nExpected right child data:", tc.expectedRightChild.Data, "\nReceived node with right child data: ", result.right.Data)
-				}
+			assertNode(t, tc.expectedLeft, result.left, "left")
+			assertNode(t, tc.expectedRight, result.right, "right")
+		})
+	}
+}
+
+func TestFindLeftMostParent(t *testing.T) {
+	var testCases = []struct {
+		dataValues    []int
+		expectedData  int
+		expectedLeft  *Node
+		expectedRight *Node
+	}{
+		{dataValues: []int{2}, expectedData: 2, expectedLeft: nil, expectedRight: nil},
+		{dataValues: []int{2, 3}, expectedData: 2, expectedLeft: nil, expectedRight: &Node{Data: 3}},
+		{dataValues: []int{2, 1, 3}, expectedData: 2, expectedLeft: &Node{Data: 1}, expectedRight: &Node{Data: 3}},
+		{dataValues: []int{2, 0, 1}, expectedData: 2, expectedLeft: &Node{Data: 0}, expectedRight: nil},
+		{dataValues: []int{2, -1, 0, 1}, expectedData: 2, expectedLeft: &Node{Data: -1}, expectedRight: nil},
+		{dataValues: []int{2, -1, 1, 0}, expectedData: 2, expectedLeft: &Node{Data: -1}, expectedRight: nil},
+
+		{dataValues: []int{2, 1, 0}, expectedData: 1, expectedLeft: &Node{Data: 0}, expectedRight: nil},
+		{dataValues: []int{2, 1, -1, 0}, expectedData: 1, expectedLeft: &Node{Data: -1}, expectedRight: nil},
+		{dataValues: []int{2, 0, -1, 1}, expectedData: 0, expectedLeft: &Node{Data: -1}, expectedRight: &Node{Data: 1}},
+		{dataValues: []int{2, 0, 1, -1}, expectedData: 0, expectedLeft: &Node{Data: -1}, expectedRight: &Node{Data: 1}},
+	}
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("from tree %v ", tc.dataValues), func(t *testing.T) {
+			tree := createBST(tc.dataValues)
+			result := FindLeftMostParent(tree.Root)
+			if tc.expectedData != result.Data {
+				t.Error("\nExpected parent data:", tc.expectedData, "\nReceived: ", result.Data)
 			}
+			assertNode(t, tc.expectedLeft, result.left, "left")
+			assertNode(t, tc.expectedRight, result.right, "right")
+
 		})
 	}
 }
@@ -365,5 +413,23 @@ func assertLeafNode(t *testing.T, expectedData int, n *Node) {
 	}
 	if n.right != nil {
 		t.Error("Right pointer should be nil")
+	}
+}
+
+func assertNode(t *testing.T, expected, result *Node, hint string) {
+	if expected == nil {
+		if result != nil {
+			t.Error("\nExpected", hint, "as nil but received", hint, "node with data: ", result.Data)
+			return
+		}
+	} else {
+		if result == nil {
+			t.Error("\nExpected", hint, "node with data: ", expected.Data, "but received nil")
+			return
+		}
+		if expected.Data != result.Data {
+			t.Error("\nExpected", hint, " data:", expected.Data, "\nReceived node with", hint, " data: ", result.Data)
+			return
+		}
 	}
 }
