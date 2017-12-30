@@ -76,6 +76,26 @@ func (tree *BinarySearchTree) Find(target int) *Node {
 	}
 }
 
+// FindParent returns the parent of the first matching node from the subtree
+func FindParent(target int, start *Node) *Node {
+	current := start
+	parent := current
+	for {
+		switch {
+		case current == nil:
+			return nil
+		case current.Data == target:
+			return parent
+		case current.Data < target:
+			parent = current
+			current = current.right
+		case current.Data > target:
+			parent = current
+			current = current.left
+		}
+	}
+}
+
 // InsertValue adds data (with a new node) to the Binary Search Tree
 func (tree *BinarySearchTree) InsertValue(target int) {
 	if tree.Root == nil {
@@ -109,22 +129,16 @@ func (tree *BinarySearchTree) RemoveValue(target int) {
 		RemoveRoot(tree)
 		return
 	}
-	current := tree.Root
-	parent := current
-	for {
-		switch {
-		case current == nil:
-			return
-		case current.Data == target:
-			RemoveNode(current, parent)
-			return
-		case current.Data < target:
-			parent = current
-			current = current.right
-		case current.Data > target:
-			parent = current
-			current = current.left
-		}
+	parent := FindParent(target, tree.Root)
+	if parent == nil {
+		return
+	}
+	if parent.left != nil && parent.left.Data == target {
+		RemoveNode(parent.left, parent)
+		return
+	}
+	if parent.right != nil && parent.right.Data == target {
+		RemoveNode(parent.right, parent)
 	}
 }
 
@@ -212,6 +226,33 @@ func RemoveRoot(tree *BinarySearchTree) {
    -1  3
      02
 */
+func replaceLeft(removeeParent, replacementParent *Node) {
+	switch {
+	case removeeParent == nil:
+		fmt.Println("ERROR should never reach here with removeeParent as nil")
+		return
+	case replacementParent == nil || replacementParent.right == nil:
+		fmt.Println("ERROR should never reach here with replacementParent or its right child as nil")
+		return
+	case replacementParent.right.right != nil:
+		fmt.Println("ERROR a replacement (right most node) should not have a child to the right")
+		return
+	}
+
+	replacement := replacementParent.right
+	removee := removeeParent.left
+	fmt.Println("J", removee.Data)
+	removeeLeft := removee.left
+	removeeRight := removee.right
+	if removeeRight == replacement { // edge case where a child replaces a parent
+		removeeRight = nil
+	}
+
+	replacementParent.right = nil    // remove the replacement's previous parent link
+	removeeParent.left = replacement // remove the old node from the subtree
+	replacement.left = removeeLeft
+	replacement.right = removeeRight
+}
 
 // RemoveNode also handles the special case of removing a leaf node
 func RemoveNode(node, parent *Node) {

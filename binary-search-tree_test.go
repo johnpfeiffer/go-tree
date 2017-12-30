@@ -176,6 +176,19 @@ func TestInsertAdvanced(t *testing.T) {
 	}
 }
 
+func TestFindNothing(t *testing.T) {
+	nonExistentValue := 1001
+	for _, tc := range BSTTestCases {
+		t.Run(fmt.Sprintf("Should not find %v in tree %v ", nonExistentValue, tc.preOrderTraversal), func(t *testing.T) {
+			tree := createBST(tc.dataValues)
+			result := tree.Find(nonExistentValue)
+			if nil != result {
+				t.Error("\nExpected to not find ", nonExistentValue, " in: ", tc.preOrderTraversal, " but got ", result)
+			}
+		})
+	}
+}
+
 func TestFindSuccess(t *testing.T) {
 	var testCases = []struct {
 		dataValues    []int
@@ -201,6 +214,76 @@ func TestFindSuccess(t *testing.T) {
 			result := tree.Find(tc.target)
 			if tc.target != result.Data {
 				t.Error("\nExpected data:", tc.target, "\nReceived node with data: ", result.Data)
+			}
+			assertNode(t, tc.expectedLeft, result.left, "left")
+			assertNode(t, tc.expectedRight, result.right, "right")
+		})
+	}
+}
+
+func TestFindParentNil(t *testing.T) {
+	nonExistentValue := 1001
+	for _, tc := range BSTTestCases {
+		t.Run(fmt.Sprintf("Should not find %v in tree %v ", nonExistentValue, tc.dataValues), func(t *testing.T) {
+			tree := createBST(tc.dataValues)
+			result := tree.Find(nonExistentValue)
+			if nil != result {
+				t.Error("\nExpected to not find ", nonExistentValue, " in: ", tc.dataValues, " but got ", result)
+			}
+		})
+	}
+}
+
+// TestFindParentEasy leverages the fact that the first element inserted after the root become its child
+func TestFindParentEasy(t *testing.T) {
+	for _, tc := range BSTTestCases {
+		t.Run(fmt.Sprintf("in tree %v", tc.dataValues), func(t *testing.T) {
+			tree := createBST(tc.dataValues)
+			switch len(tc.dataValues) {
+			case 0:
+				result := FindParent(1001, tree.Root)
+				if result != nil {
+					t.Error("\nExpected nil when passed a nil node, but got", result)
+				}
+			case 1:
+				result := FindParent(tc.dataValues[0], tree.Root)
+				if tc.dataValues[0] != result.Data {
+					t.Error("\nExpecting the parent is itself when searching for oneself, instead found", result)
+				}
+			default:
+				result := FindParent(tc.dataValues[1], tree.Root)
+				if tc.dataValues[0] != result.Data {
+					t.Error("\nExpected parent data ", tc.dataValues[0], " in: ", tc.preOrderTraversal, " but got ", result)
+				}
+			}
+		})
+	}
+}
+
+func TestFindParentSuccess(t *testing.T) {
+	var testCases = []struct {
+		dataValues    []int
+		target        int
+		expectedData  int
+		expectedLeft  *Node
+		expectedRight *Node
+	}{
+		{dataValues: []int{2, 1, 3}, target: 3, expectedData: 2, expectedLeft: &Node{Data: 1}, expectedRight: &Node{Data: 3}},
+		{dataValues: []int{1, 2, 3}, target: 3, expectedData: 2, expectedLeft: nil, expectedRight: &Node{Data: 3}},
+		{dataValues: []int{2, 5, 3}, target: 3, expectedData: 5, expectedLeft: &Node{Data: 3}, expectedRight: nil},
+		{dataValues: []int{2, 5, 3, 4}, target: 3, expectedData: 5, expectedLeft: &Node{Data: 3}, expectedRight: nil},
+		{dataValues: []int{2, 5, 4, 3}, target: 3, expectedData: 4, expectedLeft: &Node{Data: 3}, expectedRight: nil},
+
+		{dataValues: []int{2, -1, 0}, target: 0, expectedData: -1, expectedLeft: nil, expectedRight: &Node{Data: 0}},
+		{dataValues: []int{2, -1, 0, 1}, target: 0, expectedData: -1, expectedLeft: nil, expectedRight: &Node{Data: 0}},
+		{dataValues: []int{2, -1, 1, 0}, target: 0, expectedData: 1, expectedLeft: &Node{Data: 0}, expectedRight: nil},
+	}
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("Find parent of %v in tree %v ", tc.target, tc.dataValues), func(t *testing.T) {
+			tree := createBST(tc.dataValues)
+			result := FindParent(tc.target, tree.Root)
+			if tc.expectedData != result.Data {
+				t.Error("\nExpected parent data:", tc.expectedData, "\nReceived: ", result.Data)
 			}
 			assertNode(t, tc.expectedLeft, result.left, "left")
 			assertNode(t, tc.expectedRight, result.right, "right")
@@ -268,19 +351,6 @@ func TestFindLeftMostParent(t *testing.T) {
 			assertNode(t, tc.expectedLeft, result.left, "left")
 			assertNode(t, tc.expectedRight, result.right, "right")
 
-		})
-	}
-}
-
-func TestFindNothing(t *testing.T) {
-	nonExistentValue := 1001
-	for _, tc := range BSTTestCases {
-		t.Run(fmt.Sprintf("Should not find %v in tree %v ", nonExistentValue, tc.preOrderTraversal), func(t *testing.T) {
-			tree := createBST(tc.dataValues)
-			result := tree.Find(nonExistentValue)
-			if nil != result {
-				t.Error("\nExpected to not find ", nonExistentValue, " in: ", tc.preOrderTraversal, " but got ", result)
-			}
 		})
 	}
 }
@@ -380,6 +450,35 @@ func TestRemoveValueSimpleSuccess(t *testing.T) {
 			// }
 			if expected != tree.Display() {
 				t.Error("\nExpected tree (string):", tc.expectedTreeString, "\nReceived: ", tree.Display())
+			}
+		})
+	}
+}
+
+func TestReplaceLeft(t *testing.T) {
+	var testCases = []struct {
+		dataValues []int
+		target     int
+	}{
+		{dataValues: []int{1, -1, 0}, target: -1},
+		// {dataValues: []int{4, 1, -1, 0}, target: 1},
+	}
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("Remove %v from tree %v ", tc.target, tc.dataValues), func(t *testing.T) {
+			reducedDataValues := intRemoved(tc.target, tc.dataValues)
+			expected := sortedIntsString(reducedDataValues)
+			tree := createBST(tc.dataValues)
+
+			// in order to remove -1
+			// I need -1's parent
+			// then I need the replacement's parent
+
+			// replacementParent := FindRightMostParent()
+			// replaceLeft()
+			// replaceLeft(tree.Root, tree.Root.left.left)
+
+			if expected != tree.Display() {
+				t.Error("\nExpected tree (string):", expected, "\nReceived: ", tree.Display())
 			}
 		})
 	}
