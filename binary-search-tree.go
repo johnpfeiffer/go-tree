@@ -218,39 +218,67 @@ func RemoveRoot(tree *BinarySearchTree) {
 }
 
 // replaceLeft is used to remove a node (when the right most node is found in a left subtree)
-// case 1: nodeToRemove is -1, removeeParent is 1, replacementParent is -1, replacement is 0
-// case 2: nodeToRemove is 1, removeeParent is 4, replacementParent is -1, replacement is 0
-/*	     8
+// case 1 (leaf): removeeParent is 0, removee is -1, replacementParent is -1, replacement is nil
+// case 2: removeeParent is 2, removee is 0, replacementParent is 0, replacement is 1
+
+/*
+	     8
 	   4
      1  6
    -1  3
-     02
+	 0
+
+LEAF (remove -1)  NO RIGHT (remove 1)   RIGHT (remove -2)    BOTH
+  2   2   2      2   2     2              2      2     2       2       2       2       2
+-1   0   0      1   1     1             -2     -2    -2      -2      -2      -2      -2
+   -1  -1 1    0   0     0                0      0     0    -6 0   -6  0   -6  0   -6   0
+                   -1  -2 -1                   -1    -1 1         -7        -3      -4
+                                                                                      -3
 */
-func replaceLeft(removeeParent, replacementParent *Node) {
+func removeLeft(removeeParent *Node) {
 	switch {
 	case removeeParent == nil:
 		fmt.Println("ERROR should never reach here with removeeParent as nil")
 		return
-	case replacementParent == nil || replacementParent.right == nil:
-		fmt.Println("ERROR should never reach here with replacementParent or its right child as nil")
-		return
-	case replacementParent.right.right != nil:
-		fmt.Println("ERROR a replacement (right most node) should not have a child to the right")
+	case removeeParent.left == nil:
 		return
 	}
-
-	replacement := replacementParent.right
 	removee := removeeParent.left
-	removeeLeft := removee.left
-	removeeRight := removee.right
-	if removeeRight == replacement { // edge case where a child replaces a parent
-		removeeRight = nil
+	if removee.right == nil && removee.left == nil {
+		removeeParent.left = nil // if pointers then removee.Data = nil to prevent memory leaks
+		return
 	}
+	// CONTINUE, there is a replacement node that must be in the left subtree
+	if removee.right == nil { // the easy case, just hoist the left child up
+		removeeParent.left = removee.left
+		return
+	}
+	// CONTINUE, there is a replacement that must be in the right subtree
+	if removee.left == nil { // the easy case, just hoist the right child up
+		removeeParent.left = removee.right
+		return
+	}
+	// CONTINUE, the replacement is either the leftmost of the right subtree or the rightmost of the left subtree
+	// TODO: should I measure the depth of the left and right subtrees to push towards balance?
+	// ARBITRARILY choosing the left subtree to pick a replacement (the right-most)
+	replacementParent := FindRightMostParent(removee.left)
+	removeeRight := removee.right
+	// edge case where the replacement is the left child of the removee
+	if replacementParent == removee.left { // the easy case, no competing right children so just hoist the left child up
+		removeeParent.left = replacementParent
+		replacementParent.right = removeeRight
+		return
+	}
+	// CONTINUE, the replacementParent.right is different than the removee.left and is the right most in the subtree
+	replacement := replacementParent.right
+	fmt.Println("JOHN", replacementParent.Data, replacement.Data)
+	if replacement.left == nil { // no merge required yet
+		removeeParent.left = replacement
+		replacementParent.right = removeeRight
+		return
+	}
+	// TODO: more complex variations
 
-	replacementParent.right = nil    // remove the replacement's previous parent link
-	removeeParent.left = replacement // remove the old node from the subtree
-	replacement.left = removeeLeft
-	replacement.right = removeeRight
 }
 
 // RemoveNode also handles the special case of removing a leaf node

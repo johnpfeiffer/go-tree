@@ -460,26 +460,34 @@ func TestReplaceLeft(t *testing.T) {
 		dataValues []int
 		target     int
 	}{
+		// LEAF NODES
+		{dataValues: []int{2, -1}, target: -1},
+		{dataValues: []int{2, -1, 3}, target: -1},
+		{dataValues: []int{2, 0, -1}, target: -1},
+		{dataValues: []int{2, 0, -1, 1}, target: -1},
+		// NO RIGHT SUBTREE
 		{dataValues: []int{2, 1, 0}, target: 1},
-		// {dataValues: []int{1, -1, 0}, target: -1},
-		// {dataValues: []int{4, 1, -1, 0}, target: 1},
+		{dataValues: []int{2, 1, 0, -1}, target: 1},     // partial left subtree
+		{dataValues: []int{2, 1, 0, -2, -1}, target: 1}, // perfect left subtree
+		// NO LEFT SUBTREE
+		{dataValues: []int{2, -2, 0}, target: -2},
+		{dataValues: []int{2, -2, 0, -1}, target: -2}, // partial right subtree
+		{dataValues: []int{2, -2, 0, -1}, target: -2}, // perfect right subtree
+		// BOTH SUBTREES
+		{dataValues: []int{2, -2, -6, 0}, target: -2},
+		{dataValues: []int{2, -2, -6, 0, -7}, target: -2},
+		{dataValues: []int{2, -2, -6, 0, -3}, target: -2},
 	}
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("Remove %v from tree %v ", tc.target, tc.dataValues), func(t *testing.T) {
+			// GIVEN
 			reducedDataValues := intRemoved(tc.target, tc.dataValues)
 			expected := sortedIntsString(reducedDataValues)
 			tree := createBST(tc.dataValues)
-
+			// WHEN
 			removeeParent := FindParent(tc.target, tree.Root)
-			if removeeParent.left != nil && removeeParent.left.Data == tc.target {
-				replacementParent := FindRightMostParent(removeeParent.left)
-				fmt.Println("JOHN", replacementParent, removeeParent)
-				replaceLeft(removeeParent, replacementParent)
-			}
-			if removeeParent.right != nil && removeeParent.right.Data == tc.target {
-				// replacementParent := FindLeftMostParent(removeeParent.right)
-				// replaceRight(removeeParent, replacementParent)
-			}
+			removeLeft(removeeParent)
+			// THEN
 			if expected != tree.Display() {
 				t.Error("\nExpected tree (string):", expected, "\nReceived: ", tree.Display())
 			}
