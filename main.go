@@ -20,9 +20,11 @@ func main() {
 	fmt.Printf("%#v\n", bst)
 	bst.InsertValue(-1)
 	bst.Display()
-	fmt.Printf("%#v\n", bst.Find(0))
-	fmt.Printf("%#v\n", bst.Find(-1))
-	fmt.Printf("%#v\n", bst.Find(-2))
+	fmt.Println("traversed in-order", bst.Display())
+	fmt.Println("height:", bst.Height()) // should be 1
+	fmt.Printf("find 0: %#v\n", bst.Find(0))
+	fmt.Printf("find -1: %#v\n", bst.Find(-1))
+	fmt.Printf("find -2: %#v\n", bst.Find(-2))
 
 	bst.InsertValue(1)
 	fmt.Println("traversed in-order", bst.Display())
@@ -37,6 +39,10 @@ func main() {
 	fmt.Println("JOHN", TraverseInOrder(bst2.Root))
 	bst2.RemoveValue(0)
 	fmt.Println("JOHN", TraverseInOrder(bst2.Root))
+
+	bst3 := createBST([]int{3, 5, 2, 1, 4, 6, 7})
+	fmt.Println("traversed pre-order:", TraversePreOrder(bst3.Root))
+	fmt.Println("height:", bst3.Height()) // should be 3
 }
 
 func createBST(a []int) BinarySearchTree {
