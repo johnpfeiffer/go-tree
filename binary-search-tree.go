@@ -61,7 +61,7 @@ func TraverseInOrder(n *Node) string {
 
 // Height as defined by https://en.wikipedia.org/wiki/Binary_tree
 func (tree *BinarySearchTree) Height() int {
-	if tree.Root.left == nil && tree.Root.right == nil {
+	if tree.Root == nil || (tree.Root.left == nil && tree.Root.right == nil) {
 		return 0
 	}
 	return subtreeHeight(tree.Root) - 1
