@@ -85,6 +85,33 @@ func subtreeHeight(n *Node) int {
 	return rightMax + 1
 }
 
+// MinimumDepth is the shortest path from the Root to a leaf node
+func (tree *BinarySearchTree) MinimumDepth() int {
+	if tree.Root == nil || (tree.Root.left == nil && tree.Root.right == nil) {
+		return 0
+	}
+	return subtreeMinimumDepth(tree.Root) - 1
+}
+
+// subtreeMinimumDepth is a depth first recursive algorithm
+func subtreeMinimumDepth(n *Node) int {
+	leftMax := 0
+	rightMax := 0
+	if n.left == nil && n.right == nil {
+		return 1
+	}
+	if n.left != nil {
+		leftMax = subtreeHeight(n.left)
+	}
+	if n.right != nil {
+		rightMax = subtreeHeight(n.right)
+	}
+	if leftMax < rightMax {
+		return leftMax + 1
+	}
+	return rightMax + 1
+}
+
 // Find returns the first node that has a matching key
 func (tree *BinarySearchTree) Find(target int) *Node {
 	current := tree.Root
