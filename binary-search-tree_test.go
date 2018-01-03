@@ -128,7 +128,7 @@ func TestInsertSimple(t *testing.T) {
 		}
 		current = current.right
 		assertLeafNode(t, expected2, current)
-		assertHeight(t, 1, tree.Height())
+		assertNumber(t, "height", 1, tree.Height())
 	})
 }
 
@@ -147,10 +147,10 @@ func TestInOrder(t *testing.T) {
 	for _, tc := range BSTTestCases {
 		t.Run(fmt.Sprintf("Traversal of %v ", tc.dataValues), func(t *testing.T) {
 			expected := sortedIntsString(tc.dataValues)
-			expectedBST := createBST(tc.dataValues)
-			expectedBSTString := TraverseInOrder(expectedBST.Root)
-			if expected != expectedBSTString {
-				t.Error("\nTest ERROR: Expected tree (string):", expected, "\nReceived: ", expectedBSTString)
+			tree := createBST(tc.dataValues)
+			treeString := TraverseInOrder(tree.Root)
+			if expected != treeString {
+				t.Error("\nTest ERROR: Expected tree (string):", expected, "\nReceived: ", treeString)
 			}
 			result := TraverseInOrder(tc.tree.Root)
 			if expected != result {
@@ -183,13 +183,71 @@ func TestHeight(t *testing.T) {
 	for _, tc := range BSTTestCases {
 		t.Run(fmt.Sprintf("Height of tree %v ", tc.preOrderTraversal), func(t *testing.T) {
 			expected := sortedIntsString(tc.dataValues)
-			expectedBST := createBST(tc.dataValues)
-			expectedBSTString := TraverseInOrder(expectedBST.Root)
-			if expected != expectedBSTString {
-				t.Error("\nTest ERROR: Expected tree (string):", expected, "\nReceived: ", expectedBSTString)
+			tree := createBST(tc.dataValues)
+			treeString := TraverseInOrder(tree.Root)
+			if expected != treeString {
+				t.Error("\nTest ERROR: Expected tree (string):", expected, "\nReceived: ", treeString)
 			}
-			assertHeight(t, tc.height, expectedBST.Height())
-			assertHeight(t, tc.height, tc.tree.Height())
+			assertNumber(t, "height", tc.height, tree.Height())
+			assertNumber(t, "height", tc.height, tc.tree.Height())
+		})
+	}
+}
+
+func TestMinimumDepthDFS(t *testing.T) {
+	var testCases = []struct {
+		dataValues []int
+		height     int
+		minDepth   int
+	}{
+		// right sided trees
+		{dataValues: []int{2}, height: 0, minDepth: 1},
+		{dataValues: []int{2, 3}, height: 1, minDepth: 2},
+		{dataValues: []int{2, 3, 5}, height: 2, minDepth: 3},
+		{dataValues: []int{2, 3, 5, 1}, height: 2, minDepth: 2},
+		{dataValues: []int{2, 3, 5, 1, 4}, height: 3, minDepth: 2},
+		{dataValues: []int{2, 3, 5, 1, 4, 0}, height: 3, minDepth: 3},
+		// left sided trees
+		{dataValues: []int{2, -3}, height: 1, minDepth: 2},
+		{dataValues: []int{2, -3, -2}, height: 2, minDepth: 3},
+		{dataValues: []int{2, -3, -2}, height: 2, minDepth: 3},
+		{dataValues: []int{2, -3, -2, -1}, height: 3, minDepth: 4},
+		{dataValues: []int{2, -3, -2, -4}, height: 2, minDepth: 3},
+	}
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("right sided tree %v", tc.dataValues), func(t *testing.T) {
+			tree := createBST(tc.dataValues)
+			assertNumber(t, "height", tc.height, tree.Height())
+			assertNumber(t, "minimum depth", tc.minDepth, tree.MinimumDepth())
+		})
+	}
+}
+
+func TestMinimumDepthBFS(t *testing.T) {
+	var testCases = []struct {
+		dataValues []int
+		height     int
+		minDepth   int
+	}{
+		// right sided trees
+		{dataValues: []int{2}, height: 0, minDepth: 1},
+		{dataValues: []int{2, 3}, height: 1, minDepth: 2},
+		{dataValues: []int{2, 3, 5}, height: 2, minDepth: 3},
+		{dataValues: []int{2, 3, 5, 1}, height: 2, minDepth: 2},
+		// {dataValues: []int{2, 3, 5, 1, 4}, height: 3, minDepth: 2},
+		// {dataValues: []int{2, 3, 5, 1, 4, 0}, height: 3, minDepth: 3},
+		// // left sided trees
+		// {dataValues: []int{2, -3}, height: 1, minDepth: 2},
+		// {dataValues: []int{2, -3, -2}, height: 2, minDepth: 3},
+		// {dataValues: []int{2, -3, -2}, height: 2, minDepth: 3},
+		// {dataValues: []int{2, -3, -2, -1}, height: 3, minDepth: 4},
+		// {dataValues: []int{2, -3, -2, -4}, height: 2, minDepth: 3},
+	}
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("right sided tree %v", tc.dataValues), func(t *testing.T) {
+			tree := createBST(tc.dataValues)
+			assertNumber(t, "height", tc.height, tree.Height())
+			assertNumber(t, "minimum depth", tc.minDepth, subtreeMinimumDepthBFS(tree.Root))
 		})
 	}
 }
@@ -395,7 +453,7 @@ func TestRemoveValueSimpleNonExistent(t *testing.T) {
 			if tc.preOrderTraversal != preOrderResult {
 				t.Error("\nExpected inserted tree (string):", tc.preOrderTraversal, "\nReceived (pre-order): ", preOrderResult)
 			}
-			assertHeight(t, tc.height, tree.Height())
+			assertNumber(t, "height", tc.height, tree.Height())
 		})
 	}
 }
@@ -426,6 +484,7 @@ func TestRemoveValueAdvanced(t *testing.T) {
 */
 
 func TestRemoveValueSimpleSuccess(t *testing.T) {
+	// TODO: struct that just extends the nested BSTTestCases
 	var testCases = []struct {
 		dataValues         []int
 		target             int
@@ -464,10 +523,10 @@ func TestRemoveValueSimpleSuccess(t *testing.T) {
 				assertEmpty(t, tree)
 			case 2:
 				assertLeafNode(t, tree.Root.Data, tree.Root)
-				assertHeight(t, 0, tree.Height())
+				assertNumber(t, "height", 0, tree.Height())
 			case 3:
 				if tc.dataValues[0] > tc.dataValues[1] && tc.dataValues[1] > tc.dataValues[2] {
-					assertHeight(t, 1, tree.Height())
+					assertNumber(t, "height", 1, tree.Height())
 				}
 			}
 			// if expected != tc.expectedTreeString {
@@ -558,7 +617,7 @@ func assertLeafNode(t *testing.T, expectedData int, n *Node) {
 func assertNode(t *testing.T, expected, result *Node, hint string) {
 	if expected == nil {
 		if result != nil {
-			t.Error("\nExpected", hint, "as nil but received", hint, "node with data: ", result.Data)
+			t.Error("\nExpected", hint, "as nil but received", hint, "node with data:", result.Data)
 			return
 		}
 	} else {
@@ -567,14 +626,14 @@ func assertNode(t *testing.T, expected, result *Node, hint string) {
 			return
 		}
 		if expected.Data != result.Data {
-			t.Error("\nExpected", hint, " data:", expected.Data, "\nReceived node with", hint, " data: ", result.Data)
+			t.Error("\nExpected", hint, " data:", expected.Data, "\nReceived node with", hint, " data:", result.Data)
 			return
 		}
 	}
 }
 
-func assertHeight(t *testing.T, expected, result int) {
+func assertNumber(t *testing.T, hint string, expected, result int) {
 	if expected != result {
-		t.Error("\nExpected height:", expected, "\nReceived: ", result)
+		t.Error("\nExpected", hint, ":", expected, "\nReceived:", result)
 	}
 }

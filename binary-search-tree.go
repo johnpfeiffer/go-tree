@@ -85,31 +85,60 @@ func subtreeHeight(n *Node) int {
 	return rightMax + 1
 }
 
-// MinimumDepth is the shortest path from the Root to a leaf node
+// MinimumDepth is the number of nodes on the shortest path from the Root to a leaf
 func (tree *BinarySearchTree) MinimumDepth() int {
-	if tree.Root == nil || (tree.Root.left == nil && tree.Root.right == nil) {
+	if tree.Root == nil {
 		return 0
 	}
-	return subtreeMinimumDepth(tree.Root) - 1
+	return subtreeMinimumDepth(tree.Root, 1)
 }
 
-// subtreeMinimumDepth is a depth first recursive algorithm
-func subtreeMinimumDepth(n *Node) int {
+// subtreeMinimumDepth is a depth first recursive algorithm to find the shortest path from root to leaf
+// the leaf node triggers the return
+// every intermediate node needs to add one
+func subtreeMinimumDepth(n *Node, depth int) int {
 	leftMax := 0
 	rightMax := 0
 	if n.left == nil && n.right == nil {
-		return 1
+		return depth
 	}
-	if n.left != nil {
-		leftMax = subtreeHeight(n.left)
+	if n.right == nil && n.left != nil {
+		return subtreeMinimumDepth(n.left, depth+1)
 	}
-	if n.right != nil {
-		rightMax = subtreeHeight(n.right)
+	if n.left == nil && n.right != nil {
+		return subtreeMinimumDepth(n.right, depth+1)
 	}
+	leftMax = subtreeMinimumDepth(n.left, depth+1)
+	rightMax = subtreeMinimumDepth(n.right, depth+1)
 	if leftMax < rightMax {
-		return leftMax + 1
+		return leftMax
 	}
-	return rightMax + 1
+	return rightMax
+}
+
+// subtreeMinimumDepthBFS is breadth first to find the shortest path from root to a leaf
+func subtreeMinimumDepthBFS(n *Node) int {
+	if n == nil {
+		return 0
+	}
+	unvisited := []*Node{n}
+	depth := 1
+	for len(unvisited) > 0 {
+		current := unvisited[len(unvisited)-1]   // get the value
+		unvisited = unvisited[:len(unvisited)-1] // reduce the stack (aka pop)
+		if current.left == nil && current.right == nil {
+			return depth
+		}
+		if current.left != nil {
+			unvisited = append(unvisited, current.left)
+		}
+		if current.right != nil {
+			unvisited = append(unvisited, current.right)
+		}
+		depth = depth + 1
+	}
+	fmt.Println("Should never reach here since there is always a leaf node")
+	return depth
 }
 
 // Find returns the first node that has a matching key
