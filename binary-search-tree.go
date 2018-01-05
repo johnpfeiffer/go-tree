@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 // Node contains data (and usually a value or a pointer to a value) and pointers to the child nodes
@@ -69,7 +70,7 @@ func TraverseLevelOrder(n *Node) string {
 	q.enqueue(n)
 	for q.length() > 0 {
 		current := q.dequeue()
-		s = s + " " + strconv.Itoa(current.Data)
+		s = s + strconv.Itoa(current.Data) + " "
 		if current.left != nil {
 			q.enqueue(current.left)
 		}
@@ -77,7 +78,7 @@ func TraverseLevelOrder(n *Node) string {
 			q.enqueue(current.right)
 		}
 	}
-	return s
+	return strings.TrimSpace(s)
 }
 
 // NodeQueue is a queue of node pointers (implemented via a slice)

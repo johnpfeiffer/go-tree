@@ -223,31 +223,29 @@ func TestMinimumDepthDFS(t *testing.T) {
 	}
 }
 
-func TestMinimumDepthBFS(t *testing.T) {
+func TestTraverseLevelOrder(t *testing.T) {
 	var testCases = []struct {
 		dataValues []int
 		height     int
-		minDepth   int
+		expected   string
 	}{
+		// TODO: just extend the original BST testcases?
 		// right sided trees
-		{dataValues: []int{2}, height: 0, minDepth: 1},
-		{dataValues: []int{2, 3}, height: 1, minDepth: 2},
-		{dataValues: []int{2, 3, 5}, height: 2, minDepth: 3},
-		{dataValues: []int{2, 3, 5, 1}, height: 2, minDepth: 2},
-		// {dataValues: []int{2, 3, 5, 1, 4}, height: 3, minDepth: 2},
-		// {dataValues: []int{2, 3, 5, 1, 4, 0}, height: 3, minDepth: 3},
-		// // left sided trees
-		// {dataValues: []int{2, -3}, height: 1, minDepth: 2},
-		// {dataValues: []int{2, -3, -2}, height: 2, minDepth: 3},
-		// {dataValues: []int{2, -3, -2}, height: 2, minDepth: 3},
-		// {dataValues: []int{2, -3, -2, -1}, height: 3, minDepth: 4},
-		// {dataValues: []int{2, -3, -2, -4}, height: 2, minDepth: 3},
+		{dataValues: []int{2}, height: 0, expected: "2"},
+		{dataValues: []int{2, 3}, height: 1, expected: "2 3"},
+		{dataValues: []int{2, 3, 5}, height: 2, expected: "2 3 5"},
+		{dataValues: []int{2, 3, 5, 1}, height: 2, expected: "2 1 3 5"},
+		{dataValues: []int{2, 3, 1, 5, 0}, height: 2, expected: "2 1 3 0 5"},
+		{dataValues: []int{2, 3, 1, 0, 5, 4}, height: 3, expected: "2 1 3 0 5 4"},
 	}
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("right sided tree %v", tc.dataValues), func(t *testing.T) {
 			tree := createBST(tc.dataValues)
 			assertNumber(t, "height", tc.height, tree.Height())
-			assertNumber(t, "minimum depth", tc.minDepth, subtreeMinimumDepthBFS(tree.Root))
+			result := TraverseLevelOrder(tree.Root)
+			if result != tc.expected {
+				t.Error("Expected", tc.expected, "but received", result)
+			}
 		})
 	}
 }
