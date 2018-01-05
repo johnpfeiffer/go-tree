@@ -42,9 +42,9 @@ func main() {
 	bst3 := createBST(c)
 	fmt.Println(c, "traversed pre-order:", TraversePreOrder(bst3.Root))
 	fmt.Println("height:", bst3.Height()) // should be 3
+	fmt.Println("BFS traversal:", TraverseLevelOrder(bst3.Root))
 
 	fmt.Println("DFS minimum depth:", bst3.MinimumDepth()) // should be 3
-	fmt.Println("BFS minimum depth:", subtreeMinimumDepthBFS(bst3.Root))
 
 }
 

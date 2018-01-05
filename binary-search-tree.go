@@ -59,6 +59,48 @@ func TraverseInOrder(n *Node) string {
 
 // TODO: post-order display
 
+// TraverseLevelOrder is a breadth first traversal https://en.wikipedia.org/wiki/Tree_traversal#Breadth-first_search
+func TraverseLevelOrder(n *Node) string {
+	var s string
+	if n == nil {
+		return ""
+	}
+	var q NodeQueue
+	q.enqueue(n)
+	for q.length() > 0 {
+		current := q.dequeue()
+		s = s + " " + strconv.Itoa(current.Data)
+		if current.left != nil {
+			q.enqueue(current.left)
+		}
+		if current.right != nil {
+			q.enqueue(current.right)
+		}
+	}
+	return s
+}
+
+// NodeQueue is a queue of node pointers (implemented via a slice)
+type NodeQueue struct {
+	q []*Node
+}
+
+func (q *NodeQueue) length() int {
+	return len(q.q)
+}
+
+// dequeue removes an element from the end of the queue (FIFO)
+func (q *NodeQueue) dequeue() *Node {
+	result := q.q[q.length()-1]
+	q.q = q.q[:q.length()-1]
+	return result
+}
+
+// enqueue inserts an element to the beginning of the queue (FIFO) , https://github.com/golang/go/wiki/SliceTricks
+func (q *NodeQueue) enqueue(n *Node) {
+	q.q = append([]*Node{n}, q.q...) // probably creating a lot of garbage this way
+}
+
 // Height as defined by https://en.wikipedia.org/wiki/Binary_tree
 func (tree *BinarySearchTree) Height() int {
 	if tree.Root == nil || (tree.Root.left == nil && tree.Root.right == nil) {
@@ -102,10 +144,10 @@ func subtreeMinimumDepth(n *Node, depth int) int {
 	if n.left == nil && n.right == nil {
 		return depth
 	}
-	if n.right == nil && n.left != nil {
+	if n.right == nil {
 		return subtreeMinimumDepth(n.left, depth+1)
 	}
-	if n.left == nil && n.right != nil {
+	if n.left == nil {
 		return subtreeMinimumDepth(n.right, depth+1)
 	}
 	leftMax = subtreeMinimumDepth(n.left, depth+1)
@@ -114,31 +156,6 @@ func subtreeMinimumDepth(n *Node, depth int) int {
 		return leftMax
 	}
 	return rightMax
-}
-
-// subtreeMinimumDepthBFS is breadth first to find the shortest path from root to a leaf
-func subtreeMinimumDepthBFS(n *Node) int {
-	if n == nil {
-		return 0
-	}
-	unvisited := []*Node{n}
-	depth := 1
-	for len(unvisited) > 0 {
-		current := unvisited[len(unvisited)-1]   // get the value
-		unvisited = unvisited[:len(unvisited)-1] // reduce the stack (aka pop)
-		if current.left == nil && current.right == nil {
-			return depth
-		}
-		if current.left != nil {
-			unvisited = append(unvisited, current.left)
-		}
-		if current.right != nil {
-			unvisited = append(unvisited, current.right)
-		}
-		depth = depth + 1
-	}
-	fmt.Println("Should never reach here since there is always a leaf node")
-	return depth
 }
 
 // Find returns the first node that has a matching key
