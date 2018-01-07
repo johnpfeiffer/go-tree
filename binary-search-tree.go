@@ -25,8 +25,8 @@ func (tree *BinarySearchTree) Display() string {
 	// return TraversePreOrder(tree.Root)
 }
 
-// TraversePreOrder shows the node data (in pre-order) and continues recursively https://en.wikipedia.org/wiki/Tree_traversal#Pre-order
-func TraversePreOrder(n *Node) string {
+// TraversePreOrderRecursive shows the node data (in pre-order) and continues recursively https://en.wikipedia.org/wiki/Tree_traversal#Pre-order
+func TraversePreOrderRecursive(n *Node) string {
 	var s string
 	var b bytes.Buffer
 	if n == nil {
@@ -34,12 +34,33 @@ func TraversePreOrder(n *Node) string {
 	}
 	b.WriteString(fmt.Sprintf("%d ", n.Data))
 	if n.left != nil {
-		s += TraversePreOrder(n.left)
+		s += TraversePreOrderRecursive(n.left)
 	}
 	if n.right != nil {
-		s += TraversePreOrder(n.right)
+		s += TraversePreOrderRecursive(n.right)
 	}
 	return b.String() + s
+}
+
+// TraversePreOrder shows the node data (in pre-order) and continues iteratively
+func TraversePreOrder(n *Node) string {
+	var b bytes.Buffer
+	if n == nil {
+		return ""
+	}
+	stack := []*Node{n}
+	for len(stack) > 0 {
+		current := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+		b.WriteString(fmt.Sprintf("%d ", current.Data))
+		if current.right != nil {
+			stack = append(stack, current.right)
+		}
+		if current.left != nil {
+			stack = append(stack, current.left)
+		}
+	}
+	return b.String()
 }
 
 // TraverseInOrder shows the node data (in-order) and continues recursively, in a BST this ouputs the data in sorted order
@@ -56,6 +77,20 @@ func TraverseInOrder(n *Node) string {
 		s = s + TraverseInOrder(n.right)
 	}
 	return s
+}
+
+// GetNthSmallest returns the value at the provided index
+func GetNthSmallest(n *Node, index int) (int, error) {
+	sortedTraversal := TraverseInOrder(n)
+	if index > len(sortedTraversal) {
+		return -100000, fmt.Errorf("ERROR: received an index %d outside of the tree range %d", index, len(sortedTraversal))
+	}
+	parts := strings.Fields(sortedTraversal)
+	result, err := strconv.Atoi(parts[index])
+	if err != nil {
+		return -10000, err
+	}
+	return result, nil
 }
 
 // TODO: post-order display

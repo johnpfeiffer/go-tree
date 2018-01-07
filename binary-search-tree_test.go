@@ -132,7 +132,18 @@ func TestInsertSimple(t *testing.T) {
 	})
 }
 
-func TestPreOrder(t *testing.T) {
+func TestPreOrderRecursive(t *testing.T) {
+	for _, tc := range BSTTestCases {
+		t.Run(fmt.Sprintf("PreOrderTraversal of %v ", tc.dataValues), func(t *testing.T) {
+			result := TraversePreOrderRecursive(tc.tree.Root)
+			if tc.preOrderTraversal != result {
+				t.Error("\nExpected data values:", tc.preOrderTraversal, "\nReceived: ", result)
+			}
+		})
+	}
+}
+
+func TestPreOrderIterative(t *testing.T) {
 	for _, tc := range BSTTestCases {
 		t.Run(fmt.Sprintf("PreOrderTraversal of %v ", tc.dataValues), func(t *testing.T) {
 			result := TraversePreOrder(tc.tree.Root)
