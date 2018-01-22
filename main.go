@@ -33,6 +33,18 @@ func main() {
 	fmt.Println("    ", bst2.Root.Data)
 	fmt.Println("  ", bst2.Root.left.Data)
 	fmt.Println(bst2.Root.left.left.Data, " ", bst2.Root.left.right.Data)
+	small2, err := GetNthSmallest(bst2.Root, 1)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("2nd smallest", small2)
+	}
+	small3, err := GetNthSmallest(bst2.Root, 2)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("3rd smallest", small3)
+	}
 
 	bst2.RemoveValue(0)
 	fmt.Println("Bug: after Removing 0:", TraverseInOrder(bst2.Root))
@@ -45,6 +57,19 @@ func main() {
 	fmt.Println("BFS traversal:", TraverseLevelOrder(bst3.Root))
 
 	fmt.Println("DFS minimum depth:", bst3.MinimumDepth()) // should be 3
+
+	// d := []int{3, 9, 20, -10001, -10001, 15, 7}
+	d := []int{3}
+	var btRoot *BinaryNode
+	createBinaryTree(d, 0, btRoot)
+	fmt.Println(d, "traversed pre-order:", BinaryPreOrder(btRoot))
+	// fmt.Println("JOHN", TraverseLevelOrderIntsRaw(bst4.Root))
+
+	lca := []int{9, 3, 5, 1, 8, 12, 16, 11, 2, 4, 6}
+	bstLCA := createBST(lca)
+	fmt.Println(lca, "traversed pre-order:", TraversePreOrder(bstLCA.Root))
+	answer := bstLCA.LowestCommonAncestor(11, 1)
+	fmt.Println(answer.Data)
 
 }
 

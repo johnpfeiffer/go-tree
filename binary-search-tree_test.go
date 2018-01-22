@@ -589,6 +589,55 @@ func TestReplaceLeft(t *testing.T) {
 	}
 }
 
+func TestLowestCommonAncestor(t *testing.T) {
+	var testCases = []struct {
+		dataValues []int
+		v          int
+		w          int
+		expected   int
+	}{
+		// Defensive programming edge cases
+		{dataValues: []int{}, v: -1, w: 1, expected: 0},      // tree of size 0
+		{dataValues: []int{1}, v: 1, w: 1, expected: 1},      // tree of size 1
+		{dataValues: []int{1}, v: -1, w: 1, expected: 1},     // not even in the tree?
+		{dataValues: []int{0, 1}, v: 0, w: 1, expected: 0},   // tree of size 2?
+		{dataValues: []int{0, -1}, v: -1, w: 0, expected: 0}, // tree of size 2 (left)?
+		// Real but easy cases
+		{dataValues: []int{0, 1, -1}, v: -1, w: 1, expected: 0}, // perfect tree
+		{dataValues: []int{0, 1, -1}, v: 1, w: -1, expected: 0}, // perfect tree
+		{dataValues: []int{0, 2, 1, 3}, v: 1, w: 3, expected: 2},
+		{dataValues: []int{0, 2, 1, 3}, v: 3, w: 1, expected: 2},
+		{dataValues: []int{0, 2, 1, 3, -1}, v: -1, w: 3, expected: 0},
+		{dataValues: []int{0, 2, 1, 3, -1}, v: 3, w: -1, expected: 0},
+		// perfect tree
+		{dataValues: []int{0, 2, 1, 3, -2, -3, -1}, v: -1, w: 3, expected: 0},
+		{dataValues: []int{0, 2, 1, 3, -2, -3, -1}, v: 3, w: -1, expected: 0},
+		{dataValues: []int{0, 2, 1, 3, -2, -3, -1}, v: 3, w: -2, expected: 0},
+		{dataValues: []int{0, 2, 1, 3, -2, -3, -1}, v: 3, w: -3, expected: 0},
+		{dataValues: []int{0, 2, 1, 3, -2, -3, -1}, v: -3, w: 3, expected: 0},
+		{dataValues: []int{0, 2, 1, 3, -2, -3, -1}, v: -3, w: 3, expected: 0},
+		{dataValues: []int{0, 2, 1, 3, -2, -3, -1}, v: -2, w: -3, expected: -2}, // ancestor is the parent of the child?
+		{dataValues: []int{0, 2, 1, 3, -2, -3, -1}, v: -3, w: -1, expected: -2},
+	}
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("of %v and %v from BST %v should be %v",
+			tc.v, tc.w, tc.expected, tc.dataValues), func(t *testing.T) {
+			// GIVEN
+			tree := createBST(tc.dataValues)
+			// WHEN
+			result := tree.LowestCommonAncestor(tc.v, tc.w)
+			// THEN
+			if len(tc.dataValues) == 0 {
+				if result != nil {
+					t.Errorf("Expected no result with an empty tree but received %#v", result)
+				}
+			} else {
+				assertNumber(t, "Common Ancestor", tc.expected, result.Data)
+			}
+		})
+	}
+}
+
 // HELPER FUNCTIONS
 
 func intInSlice(target int, a []int) bool {

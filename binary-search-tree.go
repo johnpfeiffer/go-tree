@@ -445,3 +445,29 @@ func RemoveNode(node, parent *Node) {
 		fmt.Println("ERROR should never reach here with parent not matching the child node")
 	}
 }
+
+// LowestCommonAncestor finds the lowest shared parent node , https://en.wikipedia.org/wiki/Lowest_common_ancestor
+// This definition is slightly incorrect to return a when a is the ancestor of b (noidea)
+func (tree *BinarySearchTree) LowestCommonAncestor(a, b int) *Node {
+	// TODO: maybe this should just return an error
+	if tree.Root == nil {
+		return nil
+	}
+	if a > b {
+		a, b = b, a
+	}
+	result := tree.Root
+	for {
+		if a == result.Data || b == result.Data {
+			return result
+		}
+		if a < result.Data && b > result.Data {
+			return result
+		}
+		if a < result.Data && b < result.Data {
+			result = result.left
+		} else {
+			result = result.right
+		}
+	}
+}
