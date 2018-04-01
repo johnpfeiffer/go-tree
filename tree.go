@@ -1,14 +1,13 @@
-package main
+package gotree
 
 import (
-	"bytes"
 	"fmt"
 	"strconv"
 )
 
 // TreeNode contains data (and usually a value or a pointer to a value) and pointers to the child nodes
 type TreeNode struct {
-	children []*TreeNode
+	Children []*TreeNode
 	Data     int
 }
 
@@ -17,39 +16,49 @@ type Tree struct {
 	Root *TreeNode
 }
 
-// Display returns all of the nodes in a tree
-func (tree *Tree) Display() {
-	DisplayTreeNode(tree.Root)
-	fmt.Println()
-}
-
-// DisplayTreeNode shows all of the nodes (data) in a tree
-func DisplayTreeNode(n *TreeNode) {
+// String returns all of the nodes (data) from a tree node (recursively)
+func (n *TreeNode) String() string {
+	result := ""
 	if n == nil {
-		return
+		return result
 	}
-	fmt.Printf("%d ", n.Data)
-	for _, child := range n.children {
-		DisplayTreeNode(child)
+	result = result + strconv.Itoa(n.Data)
+	for _, child := range n.Children {
+		result = result + " " + child.String()
 	}
+	return result
 }
 
-// Add inserts a node as a leaf
-func (tree *Tree) Add(n *TreeNode) {
+// Add inserts a node as a leaf to the current left most node
+func (tree *Tree) Add(leaf *TreeNode) error {
+	if tree == nil {
+		return fmt.Errorf("Cannot Add nodes to a nil pointer")
+	}
+	if tree.Root == nil {
+		tree.Root = leaf
+		return nil
+	}
 	current := tree.Root
 	for {
-		if len(current.children) == 0 {
-			current.children = append(current.children, n)
-			return
+		if len(current.Children) == 0 {
+			current.Children = append(current.Children, leaf)
+			return nil
 		}
-		current = current.children[0]
+		current = current.Children[0]
 	}
 }
 
 // AddValue is a helper to wrap creating a new node
-func (tree *Tree) AddValue(n int) {
+func (tree *Tree) AddValue(n int) error {
+	if tree == nil {
+		return fmt.Errorf("Cannot Add nodes to a nil pointer")
+	}
 	tree.Add(&TreeNode{Data: n})
+	return nil
 }
+
+/*
+
 
 // BinaryNode contains data
 type BinaryNode struct {
@@ -114,3 +123,4 @@ func TraverseLevelOrderIntsRaw(n *Node) []string {
 	}
 	return result
 }
+*/
