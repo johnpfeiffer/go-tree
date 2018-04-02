@@ -1,5 +1,10 @@
 package gotree
 
+import (
+	"bytes"
+	"fmt"
+)
+
 // BinaryTree https://en.wikipedia.org/wiki/Binary_tree
 type BinaryTree struct {
 	Root *Node
@@ -29,6 +34,12 @@ func CreateBinaryTree(a []int) *Node {
 
 // CreateBinarySubtree recursively creates a tree given a slice  of integers
 func CreateBinarySubtree(a []int, index int) *Node {
+	if len(a) == 0 {
+		return nil
+	}
+	if index >= len(a) {
+		return nil
+	}
 	n := &Node{Data: a[index]}
 	if (index*2 + 1) < len(a) {
 		n.Left = CreateBinarySubtree(a, index*2+1)
@@ -39,7 +50,8 @@ func CreateBinarySubtree(a []int, index int) *Node {
 	return n
 }
 
-// Height is the longest distance from the root to a leaf in a binary tree
+// Height is the longest distance from the root to a leaf in a binary tree, effectively counting the number of edges
+// https://www.cs.cmu.edu/~adamchik/15-121/lectures/Trees/trees.html
 func (tree *BinaryTree) Height() int {
 	if tree.Root == nil || (tree.Root.Left == nil && tree.Root.Right == nil) {
 		return 0
@@ -64,4 +76,42 @@ func SubtreeHeight(n *Node) int {
 		return leftMax + 1
 	}
 	return rightMax + 1
+}
+
+// TraversePreOrderRecursive shows the node data (in pre-order) and continues recursively https://en.wikipedia.org/wiki/Tree_traversal#Pre-order
+func TraversePreOrderRecursive(n *Node) string {
+	var s string
+	var b bytes.Buffer
+	if n == nil {
+		return ""
+	}
+	b.WriteString(fmt.Sprintf("%d ", n.Data))
+	if n.Left != nil {
+		s += TraversePreOrderRecursive(n.Left)
+	}
+	if n.Right != nil {
+		s += TraversePreOrderRecursive(n.Right)
+	}
+	return b.String() + s
+}
+
+// TraversePreOrder shows the node data (in pre-order) and continues iteratively
+func TraversePreOrder(n *Node) string {
+	var b bytes.Buffer
+	if n == nil {
+		return ""
+	}
+	stack := []*Node{n}
+	for len(stack) > 0 {
+		current := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+		b.WriteString(fmt.Sprintf("%d ", current.Data))
+		if current.Right != nil {
+			stack = append(stack, current.Right)
+		}
+		if current.Left != nil {
+			stack = append(stack, current.Left)
+		}
+	}
+	return b.String()
 }

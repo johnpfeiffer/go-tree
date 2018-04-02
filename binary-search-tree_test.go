@@ -2,6 +2,8 @@ package gotree
 
 import (
 	"fmt"
+	"sort"
+	"strconv"
 	"testing"
 )
 
@@ -132,29 +134,24 @@ func TestInsertSimple(t *testing.T) {
 	})
 }
 
+func TestInsertAdvanced(t *testing.T) {
+	for _, tc := range BSTTestCases {
+		t.Run(fmt.Sprintf("Insert to create tree %v ", tc.preOrderTraversal), func(t *testing.T) {
+			// expected := sortedIntsString(tc.dataValues)
+			tree := createBST(tc.dataValues)
+			// result := tree.Display()
+			// if expected != result {
+			// 	t.Error("\nExpected inserted tree (string):", expected, "\nReceived (in-order): ", result)
+			// }
+			preOrderResult := TraversePreOrder(tree.Root)
+			if tc.preOrderTraversal != preOrderResult {
+				t.Error("\nExpected inserted tree (string):", tc.preOrderTraversal, "\nReceived (pre-order): ", preOrderResult)
+			}
+		})
+	}
+}
+
 /*
-
-func TestPreOrderRecursive(t *testing.T) {
-	for _, tc := range BSTTestCases {
-		t.Run(fmt.Sprintf("PreOrderTraversal of %v ", tc.dataValues), func(t *testing.T) {
-			result := TraversePreOrderRecursive(tc.tree.Root)
-			if tc.preOrderTraversal != result {
-				t.Error("\nExpected data values:", tc.preOrderTraversal, "\nReceived: ", result)
-			}
-		})
-	}
-}
-
-func TestPreOrderIterative(t *testing.T) {
-	for _, tc := range BSTTestCases {
-		t.Run(fmt.Sprintf("PreOrderTraversal of %v ", tc.dataValues), func(t *testing.T) {
-			result := TraversePreOrder(tc.tree.Root)
-			if tc.preOrderTraversal != result {
-				t.Error("\nExpected data values:", tc.preOrderTraversal, "\nReceived: ", result)
-			}
-		})
-	}
-}
 
 func TestInOrder(t *testing.T) {
 	for _, tc := range BSTTestCases {
@@ -175,22 +172,6 @@ func TestInOrder(t *testing.T) {
 
 // func TestDisplay(t *testing.T) for tree.Display() is not very valuable since it is only a convenience wrapper
 
-func TestInsertAdvanced(t *testing.T) {
-	for _, tc := range BSTTestCases {
-		t.Run(fmt.Sprintf("Insert to create tree %v ", tc.preOrderTraversal), func(t *testing.T) {
-			expected := sortedIntsString(tc.dataValues)
-			tree := createBST(tc.dataValues)
-			result := tree.Display()
-			if expected != result {
-				t.Error("\nExpected inserted tree (string):", expected, "\nReceived (in-order): ", result)
-			}
-			preOrderResult := TraversePreOrder(tree.Root)
-			if tc.preOrderTraversal != preOrderResult {
-				t.Error("\nExpected inserted tree (string):", tc.preOrderTraversal, "\nReceived (pre-order): ", preOrderResult)
-			}
-		})
-	}
-}
 
 func TestHeight(t *testing.T) {
 	for _, tc := range BSTTestCases {
@@ -644,6 +625,27 @@ func TestLowestCommonAncestor(t *testing.T) {
 */
 
 // HELPER FUNCTIONS
+
+// createBST generates the BinarySearchTree by repeated insertions
+func createBST(a []int) BinarySearchTree {
+	bst := BinarySearchTree{}
+	for _, v := range a {
+		bst.InsertValue(v)
+	}
+	return bst
+}
+
+// SortedIntsString converts a slice of ints to a string, e.g. {1, 2} becomes " 1 2" (does not modify the original slice)
+func sortedIntsString(a []int) string {
+	var result string
+	temp := make([]int, len(a))
+	copy(temp, a)
+	sort.Ints(temp)
+	for _, v := range temp {
+		result = result + " " + strconv.Itoa(v)
+	}
+	return result
+}
 
 func intInSlice(target int, a []int) bool {
 	for _, v := range a {

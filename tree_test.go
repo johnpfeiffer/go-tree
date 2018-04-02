@@ -81,14 +81,23 @@ func TestTreeAddSuccess(t *testing.T) {
 func TestTreeAddError(t *testing.T) {
 	var testCases = []struct {
 		tree     *Tree
-		n        *TreeNode
 		expected string
 	}{
-		{tree: nil, n: &TreeNode{Data: 42}, expected: "Cannot Add nodes to a nil pointer"},
+		// test matrix of one to somehow magically get a nil value to call method functions because nil.Add() does not work
+		{tree: nil, expected: "Cannot Add nodes to a nil pointer"},
 	}
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("Nil tree pointer"), func(t *testing.T) {
 			err := tc.tree.Add(&TreeNode{Data: 42})
+			if err == nil {
+				t.Errorf("Expected but did not receive an error when adding a leaf node to a nil pointer tree")
+			}
+			if err.Error() != tc.expected {
+				t.Errorf("Expected the error: '%s' but received '%s'", tc.expected, err.Error())
+			}
+		})
+		t.Run(fmt.Sprintf("AddValue nil tree pointer"), func(t *testing.T) {
+			err := tc.tree.AddValue(42)
 			if err == nil {
 				t.Errorf("Expected but did not receive an error when adding a leaf node to a nil pointer tree")
 			}
