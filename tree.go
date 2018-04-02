@@ -59,26 +59,6 @@ func (tree *Tree) AddValue(n int) error {
 
 /*
 
-
-// BinaryNode contains data
-type BinaryNode struct {
-	left  *BinaryNode
-	right *BinaryNode
-	Data  int
-}
-
-// createBinaryTree creates a tree given a slice
-func createBinaryTree(a []int, index int, n *BinaryNode) {
-	n = &BinaryNode{Data: a[index]}
-	if (index*2 + 1) < len(a) {
-		createBinaryTree(a, index*2+1, n.left)
-	}
-	if (index*2 + 2) < len(a) {
-		createBinaryTree(a, index*2+2, n.right)
-	}
-	fmt.Println(n, n.left, n.right)
-}
-
 // BinaryPreOrder shows the node data (in pre-order) and continues recursively https://en.wikipedia.org/wiki/Tree_traversal#Pre-order
 func BinaryPreOrder(n *BinaryNode) string {
 	var s string
