@@ -1,10 +1,5 @@
 package gotree
 
-import (
-	"bytes"
-	"fmt"
-)
-
 // BinaryTree https://en.wikipedia.org/wiki/Binary_tree
 type BinaryTree struct {
 	Root *Node
@@ -76,42 +71,4 @@ func SubtreeHeight(n *Node) int {
 		return leftMax + 1
 	}
 	return rightMax + 1
-}
-
-// TraversePreOrderRecursive shows the node data (in pre-order) and continues recursively https://en.wikipedia.org/wiki/Tree_traversal#Pre-order
-func TraversePreOrderRecursive(n *Node) string {
-	var s string
-	var b bytes.Buffer
-	if n == nil {
-		return ""
-	}
-	b.WriteString(fmt.Sprintf("%d ", n.Data))
-	if n.Left != nil {
-		s += TraversePreOrderRecursive(n.Left)
-	}
-	if n.Right != nil {
-		s += TraversePreOrderRecursive(n.Right)
-	}
-	return b.String() + s
-}
-
-// TraversePreOrder shows the node data (in pre-order) and continues iteratively
-func TraversePreOrder(n *Node) string {
-	var b bytes.Buffer
-	if n == nil {
-		return ""
-	}
-	stack := []*Node{n}
-	for len(stack) > 0 {
-		current := stack[len(stack)-1]
-		stack = stack[:len(stack)-1]
-		b.WriteString(fmt.Sprintf("%d ", current.Data))
-		if current.Right != nil {
-			stack = append(stack, current.Right)
-		}
-		if current.Left != nil {
-			stack = append(stack, current.Left)
-		}
-	}
-	return b.String()
 }

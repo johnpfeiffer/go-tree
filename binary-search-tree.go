@@ -13,6 +13,15 @@ func (tree *BinarySearchTree) Height() int {
 	return SubtreeHeight(tree.Root) - 1
 }
 
+// createBST generates the BinarySearchTree by repeated insertions
+func createBST(a []int) BinarySearchTree {
+	bst := BinarySearchTree{}
+	for _, v := range a {
+		bst.InsertValue(v)
+	}
+	return bst
+}
+
 // InsertValue adds data (with a new node) to the Binary Search Tree
 func (tree *BinarySearchTree) InsertValue(target int) {
 	if tree.Root == nil {

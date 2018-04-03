@@ -10,15 +10,18 @@ var BinaryTreeTestCases = []struct {
 	a                 []int
 	tree              *BinaryTree
 	preOrderTraversal string
+	inOrderTraversal  string
 	height            int
 }{
-	{a: nil, tree: &BinaryTree{}, preOrderTraversal: "", height: 0},
-	{a: []int{}, tree: &BinaryTree{}, preOrderTraversal: "", height: 0},
-	{a: []int{1}, tree: &BinaryTree{Root: &Node{Data: 1}}, preOrderTraversal: "1 ", height: 0},
-	{a: []int{1, 2}, tree: &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2}}}, preOrderTraversal: "1 2 ", height: 1},
+	{a: nil, tree: &BinaryTree{}, preOrderTraversal: "", inOrderTraversal: "", height: 0},
+	{a: []int{}, tree: &BinaryTree{}, preOrderTraversal: "", inOrderTraversal: "", height: 0},
+	{a: []int{1}, tree: &BinaryTree{Root: &Node{Data: 1}},
+		preOrderTraversal: "1 ", inOrderTraversal: "1", height: 0},
+	{a: []int{1, 2}, tree: &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2}}},
+		preOrderTraversal: "1 2 ", inOrderTraversal: "2 1", height: 1},
 	// perfect tree /\
 	{a: []int{1, 2, 3}, tree: &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2}, Right: &Node{Data: 3}}},
-		preOrderTraversal: "1 2 3 ", height: 1},
+		preOrderTraversal: "1 2 3 ", inOrderTraversal: "2 1 3", height: 1},
 	// TODO
 	// degenerate trees  / / \ \
 	//                  /  \ /  \
@@ -91,7 +94,7 @@ func TestPreOrderRecursive(t *testing.T) {
 		t.Run(fmt.Sprintf("PreOrderTraversal of %#v ", tc.a), func(t *testing.T) {
 			result := TraversePreOrderRecursive(tc.tree.Root)
 			if tc.preOrderTraversal != result {
-				t.Error("\nExpected data values:", tc.preOrderTraversal, "\nReceived: ", result)
+				t.Errorf("Expected: %v but received %v", tc.preOrderTraversal, result)
 			}
 		})
 	}
@@ -102,7 +105,29 @@ func TestPreOrderIterative(t *testing.T) {
 		t.Run(fmt.Sprintf("PreOrderTraversal of %v ", tc.a), func(t *testing.T) {
 			result := TraversePreOrder(tc.tree.Root)
 			if tc.preOrderTraversal != result {
-				t.Error("\nExpected data values:", tc.preOrderTraversal, "\nReceived: ", result)
+				t.Errorf("Expected: %v but received %v", tc.preOrderTraversal, result)
+			}
+		})
+	}
+}
+
+func TestInOrderTraversalIterative(t *testing.T) {
+	for _, tc := range BinaryTreeTestCases {
+		t.Run(fmt.Sprintf("%#v", tc.a), func(t *testing.T) {
+			result := TraverseInOrder(tc.tree.Root)
+			if tc.inOrderTraversal != result {
+				t.Errorf("Expected: %v but received %v", tc.inOrderTraversal, result)
+			}
+		})
+	}
+}
+
+func TestInOrderTraversalRecursive(t *testing.T) {
+	for _, tc := range BinaryTreeTestCases {
+		t.Run(fmt.Sprintf("%#v", tc.a), func(t *testing.T) {
+			result := TraverseInOrderRecursive(tc.tree.Root)
+			if tc.inOrderTraversal != result {
+				t.Errorf("Expected: %#v but received %#v", tc.inOrderTraversal, result)
 			}
 		})
 	}
