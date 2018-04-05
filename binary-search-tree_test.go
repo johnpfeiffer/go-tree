@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
+	"strings"
 	"testing"
 )
 
@@ -107,7 +108,7 @@ var BSTTestCases = []struct {
 		preOrderTraversal: "2 6 5 4 ", height: 3},
 }
 
-func TestInsertSimple(t *testing.T) {
+func TestBSTInsertSimple(t *testing.T) {
 	expected := 42
 	t.Run(fmt.Sprintf("Insert %#v into a BST", expected), func(t *testing.T) {
 		tree := BinarySearchTree{}
@@ -134,7 +135,7 @@ func TestInsertSimple(t *testing.T) {
 	})
 }
 
-func TestInsertAdvanced(t *testing.T) {
+func TestBSTInsertAdvanced(t *testing.T) {
 	for _, tc := range BSTTestCases {
 		t.Run(fmt.Sprintf("Insert to create tree %v ", tc.preOrderTraversal), func(t *testing.T) {
 			// expected := sortedIntsString(tc.dataValues)
@@ -177,12 +178,7 @@ func TestBSTInOrderTraversalRecursive(t *testing.T) {
 	}
 }
 
-/*
-
-// func TestDisplay(t *testing.T) for tree.Display() is not very valuable since it is only a convenience wrapper
-
-
-func TestHeight(t *testing.T) {
+func TestBSTHeight(t *testing.T) {
 	for _, tc := range BSTTestCases {
 		t.Run(fmt.Sprintf("Height of tree %v ", tc.preOrderTraversal), func(t *testing.T) {
 			expected := sortedIntsString(tc.dataValues)
@@ -196,6 +192,10 @@ func TestHeight(t *testing.T) {
 		})
 	}
 }
+
+/*
+
+// func TestDisplay(t *testing.T) for tree.Display() is not very valuable since it is only a convenience wrapper
 
 func TestMinimumDepthDFS(t *testing.T) {
 	var testCases = []struct {
@@ -644,7 +644,7 @@ func sortedIntsString(a []int) string {
 	for _, v := range temp {
 		result = result + " " + strconv.Itoa(v)
 	}
-	return result
+	return strings.TrimSpace(result)
 }
 
 func intInSlice(target int, a []int) bool {

@@ -2,6 +2,7 @@ package gotree
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 )
 
@@ -25,7 +26,72 @@ var BinaryTreeTestCases = []struct {
 	// TODO
 	// degenerate trees  / / \ \
 	//                  /  \ /  \
+	// {dataValues: []int{1, 2, -1}, tree: BinarySearchTree{Root: &Node{Data: 2, Left: &Node{Data: 1, Left: &Node{Data: -1}}}},
+	// 	preOrderTraversal: "2 1 -1 ", height: 2},
+	// {dataValues: []int{2, 0, 1}, tree: BinarySearchTree{Root: &Node{Data: 2, Left: &Node{Data: 0, Right: &Node{Data: 1}}}},
+	// 	preOrderTraversal: "2 0 1 ", height: 2},
+	// {dataValues: []int{2, 5, 4}, tree: BinarySearchTree{Root: &Node{Data: 2, Right: &Node{Data: 5, Left: &Node{Data: 4}}}},
+	// 	preOrderTraversal: "2 5 4 ", height: 2},
+	// {dataValues: []int{2, 5, 6}, tree: BinarySearchTree{Root: &Node{Data: 2, Right: &Node{Data: 5, Right: &Node{Data: 6}}}},
+	// 	preOrderTraversal: "2 5 6 ", height: 2},
 
+}
+
+func TestCreateBinarySubTreeStringsSuccess(t *testing.T) {
+	var testCases = []struct {
+		a              []string
+		index          int
+		expectedHeight int
+	}{
+		{a: []string{"1"}, index: 0, expectedHeight: 1},
+		{a: []string{"1", "nil"}, index: 0, expectedHeight: 1},
+		{a: []string{"1", "2"}, index: 0, expectedHeight: 2},
+		{a: []string{"1", "2", "nil", "nil"}, index: 0, expectedHeight: 2},
+		{a: []string{"1", "2", "3"}, index: 0, expectedHeight: 2},
+		{a: []string{"1", "nil", "3"}, index: 0, expectedHeight: 2},
+		{a: []string{"1", "2", "nil", "3"}, index: 0, expectedHeight: 3},
+		{a: []string{"1", "2", "nil", "3", "4"}, index: 0, expectedHeight: 3},
+		{a: []string{"1", "nil", "3", "nil", "nil", "6"}, index: 0, expectedHeight: 3},
+	}
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("%v", tc.a), func(t *testing.T) {
+			root := CreateBinarySubtreeStrings(tc.a, tc.index)
+			expectedRootData, _ := strconv.Atoi(tc.a[0])
+			if expectedRootData != root.Data {
+				t.Errorf("Expected root value: %d but received %d", expectedRootData, root.Data)
+			}
+			result := SubtreeHeight(root)
+			if tc.expectedHeight != result {
+				t.Errorf("Expected height %d but received %d", tc.expectedHeight, result)
+			}
+		})
+	}
+}
+
+func TestCreateBinarySubTreeStringsEdgeCases(t *testing.T) {
+	var testCases = []struct {
+		a              []string
+		index          int
+		expectedHeight int
+	}{
+		{a: nil, index: 0, expectedHeight: 0},
+		{a: []string{}, index: 0, expectedHeight: 0},
+		{a: []string{"nil"}, index: 0, expectedHeight: 0},
+		{a: []string{"nil", "2"}, index: 0, expectedHeight: 0},
+		{a: []string{"1"}, index: 2, expectedHeight: 0},
+	}
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("%v", tc.a), func(t *testing.T) {
+			root := CreateBinarySubtreeStrings(tc.a, tc.index)
+			if root != nil {
+				t.Errorf("Expected tree root to be nil but received %d", root)
+			}
+			result := SubtreeHeight(root)
+			if tc.expectedHeight != result {
+				t.Errorf("Expected height %d but received %d", tc.expectedHeight, result)
+			}
+		})
+	}
 }
 
 func TestCreateBinaryTree(t *testing.T) {
