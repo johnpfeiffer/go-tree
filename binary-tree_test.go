@@ -7,25 +7,44 @@ import (
 )
 
 // Manually building each tree variation once
-var BinaryTreeTestCases = []struct {
-	a                 []int
+
+var BinaryTreeEdgeTestCases = []struct {
+	a                 []string
 	tree              *BinaryTree
 	preOrderTraversal string
 	inOrderTraversal  string
 	height            int
 }{
 	{a: nil, tree: &BinaryTree{}, preOrderTraversal: "", inOrderTraversal: "", height: 0},
-	{a: []int{}, tree: &BinaryTree{}, preOrderTraversal: "", inOrderTraversal: "", height: 0},
-	{a: []int{1}, tree: &BinaryTree{Root: &Node{Data: 1}},
-		preOrderTraversal: "1 ", inOrderTraversal: "1", height: 0},
-	{a: []int{1, 2}, tree: &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2}}},
-		preOrderTraversal: "1 2 ", inOrderTraversal: "2 1", height: 1},
-	// perfect tree /\
-	{a: []int{1, 2, 3}, tree: &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2}, Right: &Node{Data: 3}}},
-		preOrderTraversal: "1 2 3 ", inOrderTraversal: "2 1 3", height: 1},
-	// TODO
+	{a: []string{}, tree: &BinaryTree{}, preOrderTraversal: "", inOrderTraversal: "", height: 0},
+}
+
+var BinaryTreeTestCases = []struct {
+	a                 []string
+	tree              *BinaryTree
+	preOrderTraversal string
+	inOrderTraversal  string
+	height            int
+}{
+	{a: []string{"1"}, tree: &BinaryTree{Root: &Node{Data: 1}}, preOrderTraversal: "1 ", inOrderTraversal: "1", height: 0},
+	{a: []string{"1", "nil"}, tree: &BinaryTree{Root: &Node{Data: 1}}, preOrderTraversal: "1 ", inOrderTraversal: "1", height: 0},
 	// degenerate trees  / / \ \
 	//                  /  \ /  \
+	{a: []string{"1", "2"}, tree: &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2}}},
+		preOrderTraversal: "1 2 ", inOrderTraversal: "2 1", height: 1},
+	{a: []string{"1", "2", "nil", "nil"}, tree: &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2}}},
+		preOrderTraversal: "1 2 ", inOrderTraversal: "2 1", height: 1},
+	{a: []string{"1", "nil", "3"}, tree: &BinaryTree{Root: &Node{Data: 1, Left: nil, Right: &Node{Data: 3}}},
+		preOrderTraversal: "1 3 ", inOrderTraversal: "1 3", height: 1},
+	{a: []string{"1", "2", "nil", "4"},
+		tree:              &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2, Left: &Node{Data: 4}}, Right: nil}},
+		preOrderTraversal: "1 2 4 ", inOrderTraversal: "4 2 1", height: 2},
+
+	// perfect tree /\
+	{a: []string{"1", "2", "3"}, tree: &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2}, Right: &Node{Data: 3}}},
+		preOrderTraversal: "1 2 3 ", inOrderTraversal: "2 1 3", height: 1},
+
+	// TODO
 	// {dataValues: []int{1, 2, -1}, tree: BinarySearchTree{Root: &Node{Data: 2, Left: &Node{Data: 1, Left: &Node{Data: -1}}}},
 	// 	preOrderTraversal: "2 1 -1 ", height: 2},
 	// {dataValues: []int{2, 0, 1}, tree: BinarySearchTree{Root: &Node{Data: 2, Left: &Node{Data: 0, Right: &Node{Data: 1}}}},
@@ -37,38 +56,27 @@ var BinaryTreeTestCases = []struct {
 
 }
 
-func TestCreateBinarySubTreeStringsSuccess(t *testing.T) {
-	var testCases = []struct {
-		a              []string
-		index          int
-		expectedHeight int
-	}{
-		{a: []string{"1"}, index: 0, expectedHeight: 1},
-		{a: []string{"1", "nil"}, index: 0, expectedHeight: 1},
-		{a: []string{"1", "2"}, index: 0, expectedHeight: 2},
-		{a: []string{"1", "2", "nil", "nil"}, index: 0, expectedHeight: 2},
-		{a: []string{"1", "2", "3"}, index: 0, expectedHeight: 2},
-		{a: []string{"1", "nil", "3"}, index: 0, expectedHeight: 2},
-		{a: []string{"1", "2", "nil", "3"}, index: 0, expectedHeight: 3},
-		{a: []string{"1", "2", "nil", "3", "4"}, index: 0, expectedHeight: 3},
-		{a: []string{"1", "nil", "3", "nil", "nil", "6"}, index: 0, expectedHeight: 3},
-	}
-	for _, tc := range testCases {
+func TestCreateBinarySubTreeSuccess(t *testing.T) {
+	// 	{a: []string{"1", "2", "nil", "3"}, index: 0, expectedHeight: 3},
+	// 	{a: []string{"1", "2", "nil", "3", "4"}, index: 0, expectedHeight: 3},
+	// 	{a: []string{"1", "nil", "3", "nil", "nil", "6"}, index: 0, expectedHeight: 3},
+	for _, tc := range BinaryTreeTestCases {
 		t.Run(fmt.Sprintf("%v", tc.a), func(t *testing.T) {
-			root := CreateBinarySubtreeStrings(tc.a, tc.index)
+			root := CreateBinarySubtree(tc.a, 0)
 			expectedRootData, _ := strconv.Atoi(tc.a[0])
 			if expectedRootData != root.Data {
 				t.Errorf("Expected root value: %d but received %d", expectedRootData, root.Data)
 			}
-			result := SubtreeHeight(root)
-			if tc.expectedHeight != result {
-				t.Errorf("Expected height %d but received %d", tc.expectedHeight, result)
+			tree := BinaryTree{Root: root}
+			treeHeight := tree.Height()
+			if tc.height != treeHeight {
+				t.Errorf("Expected height %d but received %d", tc.height, treeHeight)
 			}
 		})
 	}
 }
 
-func TestCreateBinarySubTreeStringsEdgeCases(t *testing.T) {
+func TestCreateBinarySubTreeEdgeCases(t *testing.T) {
 	var testCases = []struct {
 		a              []string
 		index          int
@@ -80,9 +88,10 @@ func TestCreateBinarySubTreeStringsEdgeCases(t *testing.T) {
 		{a: []string{"nil", "2"}, index: 0, expectedHeight: 0},
 		{a: []string{"1"}, index: 2, expectedHeight: 0},
 	}
+
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("%v", tc.a), func(t *testing.T) {
-			root := CreateBinarySubtreeStrings(tc.a, tc.index)
+			root := CreateBinarySubtree(tc.a, tc.index)
 			if root != nil {
 				t.Errorf("Expected tree root to be nil but received %d", root)
 			}
@@ -94,73 +103,12 @@ func TestCreateBinarySubTreeStringsEdgeCases(t *testing.T) {
 	}
 }
 
-func TestCreateBinaryTree(t *testing.T) {
-	for _, tc := range BinaryTreeTestCases {
-		t.Run(fmt.Sprintf("%#v", tc.a), func(t *testing.T) {
-			root := CreateBinaryTree(tc.a)
-			tree := BinaryTree{Root: root}
-			treeHeight := tree.Height()
-			if tc.height != treeHeight {
-				t.Errorf("Expected height %d but received %d", tc.height, treeHeight)
-			}
-		})
-	}
-}
-
-func TestCreateBinarySubTreeSuccess(t *testing.T) {
-	var testCases = []struct {
-		a              []int
-		index          int
-		expectedHeight int
-	}{
-		{a: []int{1}, index: 0, expectedHeight: 1},
-	}
-	for _, tc := range testCases {
-		t.Run(fmt.Sprintf("%v", tc.a), func(t *testing.T) {
-			n := CreateBinarySubtree(tc.a, tc.index)
-			result := SubtreeHeight(n)
-			if tc.expectedHeight != result {
-				t.Errorf("Expected height %d but received %d", tc.expectedHeight, result)
-			}
-		})
-	}
-}
-
-func TestCreateBinarySubTreeEdgeCases(t *testing.T) {
-	var testCases = []struct {
-		a              []int
-		index          int
-		expectedHeight int
-	}{
-		{a: []int{}, index: 0, expectedHeight: 0},
-		{a: []int{1, 2}, index: 1, expectedHeight: 1},
-		{a: []int{1, 2}, index: 0, expectedHeight: 2},
-		{a: []int{1, -1, 2, 3, 4}, index: 3, expectedHeight: 1},
-		{a: []int{1, -1, 2, 3, 4}, index: 4, expectedHeight: 1},
-	}
-	for _, tc := range testCases {
-		t.Run(fmt.Sprintf("%v with index %v", tc.a, tc.index), func(t *testing.T) {
-			n := CreateBinarySubtree(tc.a, tc.index)
-			if len(tc.a) == 0 {
-				if n != nil {
-					t.Fatal("Should have received a nil pointer when creating an empty subtree")
-				}
-			} else {
-				result := SubtreeHeight(n)
-				if tc.expectedHeight != result {
-					t.Errorf("Expected height %d but received %d", tc.expectedHeight, result)
-				}
-			}
-		})
-	}
-}
-
 func TestPreOrderRecursive(t *testing.T) {
 	for _, tc := range BinaryTreeTestCases {
 		t.Run(fmt.Sprintf("PreOrderTraversal of %#v ", tc.a), func(t *testing.T) {
 			result := TraversePreOrderRecursive(tc.tree.Root)
 			if tc.preOrderTraversal != result {
-				t.Errorf("Expected: %v but received %v", tc.preOrderTraversal, result)
+				t.Errorf("Expected: %#v but received %#v", tc.preOrderTraversal, result)
 			}
 		})
 	}
@@ -171,7 +119,7 @@ func TestPreOrderIterative(t *testing.T) {
 		t.Run(fmt.Sprintf("PreOrderTraversal of %v ", tc.a), func(t *testing.T) {
 			result := TraversePreOrder(tc.tree.Root)
 			if tc.preOrderTraversal != result {
-				t.Errorf("Expected: %v but received %v", tc.preOrderTraversal, result)
+				t.Errorf("Expected: %#v but received %#v", tc.preOrderTraversal, result)
 			}
 		})
 	}

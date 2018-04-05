@@ -2,6 +2,7 @@ package gotree
 
 import (
 	"fmt"
+	"log"
 	"sort"
 	"strconv"
 	"strings"
@@ -138,12 +139,12 @@ func TestBSTInsertSimple(t *testing.T) {
 func TestBSTInsertAdvanced(t *testing.T) {
 	for _, tc := range BSTTestCases {
 		t.Run(fmt.Sprintf("Insert to create tree %v ", tc.preOrderTraversal), func(t *testing.T) {
-			// expected := sortedIntsString(tc.dataValues)
+			expected := sortedIntsString(tc.dataValues)
 			tree := createBST(tc.dataValues)
-			// result := tree.Display()
-			// if expected != result {
-			// 	t.Error("\nExpected inserted tree (string):", expected, "\nReceived (in-order): ", result)
-			// }
+			result := TraverseInOrder(tree.Root)
+			if expected != result {
+				t.Error("\nExpected inserted tree (string):", expected, "\nReceived (in-order): ", result)
+			}
 			preOrderResult := TraversePreOrder(tree.Root)
 			if tc.preOrderTraversal != preOrderResult {
 				t.Error("\nExpected inserted tree (string):", tc.preOrderTraversal, "\nReceived (pre-order): ", preOrderResult)
@@ -155,8 +156,9 @@ func TestBSTInsertAdvanced(t *testing.T) {
 func TestBSTInOrderTraversal(t *testing.T) {
 	for _, tc := range BinaryTreeTestCases {
 		t.Run(fmt.Sprintf("%v", tc.a), func(t *testing.T) {
-			expected := sortedIntsString(tc.a)
-			tree := createBST(tc.a)
+			intsOnly := removeNils(tc.a)
+			expected := sortedIntsString(intsOnly)
+			tree := createBST(intsOnly)
 			result := TraverseInOrder(tree.Root)
 			if expected != result {
 				t.Error("\nTest ERROR: Expected tree (string):", expected, "\nReceived: ", result)
@@ -168,8 +170,9 @@ func TestBSTInOrderTraversal(t *testing.T) {
 func TestBSTInOrderTraversalRecursive(t *testing.T) {
 	for _, tc := range BinaryTreeTestCases {
 		t.Run(fmt.Sprintf("%v ", tc.a), func(t *testing.T) {
-			expected := sortedIntsString(tc.a)
-			tree := createBST(tc.a)
+			intsOnly := removeNils(tc.a)
+			expected := sortedIntsString(intsOnly)
+			tree := createBST(intsOnly)
 			result := TraverseInOrderRecursive(tree.Root)
 			if expected != result {
 				t.Error("\nTest ERROR: Expected tree (string):", expected, "\nReceived: ", result)
@@ -635,7 +638,21 @@ func TestLowestCommonAncestor(t *testing.T) {
 
 // HELPER FUNCTIONS
 
-// SortedIntsString converts a slice of ints to a string, e.g. {1, 2} becomes " 1 2" (does not modify the original slice)
+func removeNils(a []string) []int {
+	var result []int
+	for i, v := range a {
+		if v != "nil" {
+			n, err := strconv.Atoi(v)
+			if err != nil {
+				log.Fatalf("This slice should only contain nil or integers, index: %v contains %v , with error %v", i, n, err)
+			}
+			result = append(result, n)
+		}
+	}
+	return result
+}
+
+// sortedIntsString converts a slice of ints to a string, e.g. {1, 2} becomes " 1 2" (does not modify the original slice)
 func sortedIntsString(a []int) string {
 	var result string
 	temp := make([]int, len(a))

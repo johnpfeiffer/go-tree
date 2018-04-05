@@ -14,41 +14,8 @@ type Node struct {
 	Data  int
 }
 
-// CreateBinaryTree creates a tree and returns the root given a slice of integers
-func CreateBinaryTree(a []int) *Node {
-	if len(a) == 0 {
-		return nil
-	}
-	root := &Node{Data: a[0]}
-	if len(a) > 1 {
-		root.Left = CreateBinarySubtree(a, 1)
-	}
-	if len(a) > 2 {
-		root.Right = CreateBinarySubtree(a, 2)
-	}
-	return root
-}
-
-// CreateBinarySubtree recursively creates a tree given a slice  of integers
-func CreateBinarySubtree(a []int, index int) *Node {
-	if len(a) == 0 {
-		return nil
-	}
-	if index >= len(a) {
-		return nil
-	}
-	n := &Node{Data: a[index]}
-	if (index*2 + 1) < len(a) {
-		n.Left = CreateBinarySubtree(a, index*2+1)
-	}
-	if (index*2 + 2) < len(a) {
-		n.Right = CreateBinarySubtree(a, index*2+2)
-	}
-	return n
-}
-
-// CreateBinarySubtreeStrings returns the root after recursively creating a tree given a slice of strings that are either an integer or "nil"
-func CreateBinarySubtreeStrings(a []string, index int) *Node {
+// CreateBinarySubtree returns the root after recursively creating a tree given a slice of strings that are either an integer or "nil"
+func CreateBinarySubtree(a []string, index int) *Node {
 	if len(a) == 0 {
 		return nil
 	}
@@ -66,11 +33,11 @@ func CreateBinarySubtreeStrings(a []string, index int) *Node {
 	n := &Node{Data: value}
 	leftIndex := index*2 + 1
 	if leftIndex < len(a) {
-		n.Left = CreateBinarySubtreeStrings(a, leftIndex)
+		n.Left = CreateBinarySubtree(a, leftIndex)
 	}
 	rightIndex := index*2 + 2
 	if rightIndex < len(a) {
-		n.Right = CreateBinarySubtreeStrings(a, rightIndex)
+		n.Right = CreateBinarySubtree(a, rightIndex)
 	}
 	return n
 }
