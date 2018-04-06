@@ -2,6 +2,7 @@ package gotree
 
 import (
 	"bytes"
+	"container/list"
 	"fmt"
 	"strconv"
 	"strings"
@@ -79,6 +80,29 @@ func TraverseInOrder(root *Node) string {
 		stack = stack[:len(stack)-1]
 		s = s + " " + strconv.Itoa(current.Data)
 		current = current.Right
+	}
+	return strings.TrimSpace(s)
+}
+
+// TraverseLevelOrder is a breadth first traversal https://en.wikipedia.org/wiki/Tree_traversal#Breadth-first_search
+func TraverseLevelOrder(n *Node) string {
+	var s string
+	if n == nil {
+		return ""
+	}
+	q := list.New()
+	q.PushBack(n)
+	for q.Len() > 0 {
+		temp := q.Front()
+		q.Remove(temp)
+		current := temp.Value.(*Node)
+		s = s + strconv.Itoa(current.Data) + " "
+		if current.Left != nil {
+			q.PushBack(current.Left)
+		}
+		if current.Right != nil {
+			q.PushBack(current.Right)
+		}
 	}
 	return strings.TrimSpace(s)
 }

@@ -154,11 +154,10 @@ func TestBSTInsertAdvanced(t *testing.T) {
 }
 
 func TestBSTInOrderTraversal(t *testing.T) {
-	for _, tc := range BinaryTreeTestCases {
-		t.Run(fmt.Sprintf("%v", tc.a), func(t *testing.T) {
-			intsOnly := removeNils(tc.a)
-			expected := sortedIntsString(intsOnly)
-			tree := createBST(intsOnly)
+	for _, tc := range BSTTestCases {
+		t.Run(fmt.Sprintf("%v", tc.dataValues), func(t *testing.T) {
+			expected := sortedIntsString(tc.dataValues)
+			tree := createBST(tc.dataValues)
 			result := TraverseInOrder(tree.Root)
 			if expected != result {
 				t.Error("\nTest ERROR: Expected tree (string):", expected, "\nReceived: ", result)
@@ -168,11 +167,10 @@ func TestBSTInOrderTraversal(t *testing.T) {
 }
 
 func TestBSTInOrderTraversalRecursive(t *testing.T) {
-	for _, tc := range BinaryTreeTestCases {
-		t.Run(fmt.Sprintf("%v ", tc.a), func(t *testing.T) {
-			intsOnly := removeNils(tc.a)
-			expected := sortedIntsString(intsOnly)
-			tree := createBST(intsOnly)
+	for _, tc := range BSTTestCases {
+		t.Run(fmt.Sprintf("%v ", tc.dataValues), func(t *testing.T) {
+			expected := sortedIntsString(tc.dataValues)
+			tree := createBST(tc.dataValues)
 			result := TraverseInOrderRecursive(tree.Root)
 			if expected != result {
 				t.Error("\nTest ERROR: Expected tree (string):", expected, "\nReceived: ", result)
@@ -192,6 +190,33 @@ func TestBSTHeight(t *testing.T) {
 			}
 			assertNumber(t, "height", tc.height, tree.Height())
 			assertNumber(t, "height", tc.height, tc.tree.Height())
+		})
+	}
+}
+
+func TestTraverseLevelOrder(t *testing.T) {
+	var testCases = []struct {
+		dataValues []int
+		height     int
+		expected   string
+	}{
+		// TODO: just extend the original BST testcases?
+		// Right sided trees
+		{dataValues: []int{2}, height: 0, expected: "2"},
+		{dataValues: []int{2, 3}, height: 1, expected: "2 3"},
+		{dataValues: []int{2, 3, 5}, height: 2, expected: "2 3 5"},
+		{dataValues: []int{2, 3, 5, 1}, height: 2, expected: "2 1 3 5"},
+		{dataValues: []int{2, 3, 1, 5, 0}, height: 2, expected: "2 1 3 0 5"},
+		{dataValues: []int{2, 3, 1, 0, 5, 4}, height: 3, expected: "2 1 3 0 5 4"},
+	}
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf("Right sided tree %v", tc.dataValues), func(t *testing.T) {
+			tree := createBST(tc.dataValues)
+			assertNumber(t, "height", tc.height, tree.Height())
+			result := TraverseLevelOrder(tree.Root)
+			if result != tc.expected {
+				t.Error("Expected", tc.expected, "but received", result)
+			}
 		})
 	}
 }
@@ -229,32 +254,6 @@ func TestMinimumDepthDFS(t *testing.T) {
 	}
 }
 
-func TestTraverseLevelOrder(t *testing.T) {
-	var testCases = []struct {
-		dataValues []int
-		height     int
-		expected   string
-	}{
-		// TODO: just extend the original BST testcases?
-		// Right sided trees
-		{dataValues: []int{2}, height: 0, expected: "2"},
-		{dataValues: []int{2, 3}, height: 1, expected: "2 3"},
-		{dataValues: []int{2, 3, 5}, height: 2, expected: "2 3 5"},
-		{dataValues: []int{2, 3, 5, 1}, height: 2, expected: "2 1 3 5"},
-		{dataValues: []int{2, 3, 1, 5, 0}, height: 2, expected: "2 1 3 0 5"},
-		{dataValues: []int{2, 3, 1, 0, 5, 4}, height: 3, expected: "2 1 3 0 5 4"},
-	}
-	for _, tc := range testCases {
-		t.Run(fmt.Sprintf("Right sided tree %v", tc.dataValues), func(t *testing.T) {
-			tree := createBST(tc.dataValues)
-			assertNumber(t, "height", tc.height, tree.Height())
-			result := TraverseLevelOrder(tree.Root)
-			if result != tc.expected {
-				t.Error("Expected", tc.expected, "but received", result)
-			}
-		})
-	}
-}
 
 func TestFindNothing(t *testing.T) {
 	nonExistentValue := 1001
@@ -674,6 +673,16 @@ func intInSlice(target int, a []int) bool {
 }
 
 func assertEmpty(t *testing.T, tree BinarySearchTree) {
+	t.Helper()
+	if tree.Root != nil {
+		t.Error("Root Node for an empty Binary Search Tree should still be nil")
+	}
+	if tree.Height() != 0 {
+		t.Error("Height for an empty Binary Search Tree should still be nil")
+	}
+}
+
+func assertEmptyTree(t *testing.T, tree BinaryTree) {
 	t.Helper()
 	if tree.Root != nil {
 		t.Error("Root Node for an empty Binary Search Tree should still be nil")

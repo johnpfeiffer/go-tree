@@ -28,38 +28,43 @@ var BinaryTreeTestCases = []struct {
 }{
 	{a: []string{"1"}, tree: &BinaryTree{Root: &Node{Data: 1}}, preOrderTraversal: "1 ", inOrderTraversal: "1", height: 0},
 	{a: []string{"1", "nil"}, tree: &BinaryTree{Root: &Node{Data: 1}}, preOrderTraversal: "1 ", inOrderTraversal: "1", height: 0},
-	// degenerate trees  / / \ \
-	//                  /  \ /  \
 	{a: []string{"1", "2"}, tree: &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2}}},
 		preOrderTraversal: "1 2 ", inOrderTraversal: "2 1", height: 1},
 	{a: []string{"1", "2", "nil", "nil"}, tree: &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2}}},
 		preOrderTraversal: "1 2 ", inOrderTraversal: "2 1", height: 1},
 	{a: []string{"1", "nil", "3"}, tree: &BinaryTree{Root: &Node{Data: 1, Left: nil, Right: &Node{Data: 3}}},
 		preOrderTraversal: "1 3 ", inOrderTraversal: "1 3", height: 1},
-	{a: []string{"1", "2", "nil", "4"},
-		tree:              &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2, Left: &Node{Data: 4}}, Right: nil}},
-		preOrderTraversal: "1 2 4 ", inOrderTraversal: "4 2 1", height: 2},
 
-	// perfect tree /\
+	// perfect tree    1
+	//                2 3
 	{a: []string{"1", "2", "3"}, tree: &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2}, Right: &Node{Data: 3}}},
 		preOrderTraversal: "1 2 3 ", inOrderTraversal: "2 1 3", height: 1},
 
-	// TODO
-	// {dataValues: []int{1, 2, -1}, tree: BinarySearchTree{Root: &Node{Data: 2, Left: &Node{Data: 1, Left: &Node{Data: -1}}}},
-	// 	preOrderTraversal: "2 1 -1 ", height: 2},
-	// {dataValues: []int{2, 0, 1}, tree: BinarySearchTree{Root: &Node{Data: 2, Left: &Node{Data: 0, Right: &Node{Data: 1}}}},
-	// 	preOrderTraversal: "2 0 1 ", height: 2},
-	// {dataValues: []int{2, 5, 4}, tree: BinarySearchTree{Root: &Node{Data: 2, Right: &Node{Data: 5, Left: &Node{Data: 4}}}},
-	// 	preOrderTraversal: "2 5 4 ", height: 2},
-	// {dataValues: []int{2, 5, 6}, tree: BinarySearchTree{Root: &Node{Data: 2, Right: &Node{Data: 5, Right: &Node{Data: 6}}}},
-	// 	preOrderTraversal: "2 5 6 ", height: 2},
+	// degenerate trees  / / \ \
+	//                  /  \ /  \
+	{a: []string{"1", "2", "nil", "4"},
+		tree:              &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2, Left: &Node{Data: 4}}, Right: nil}},
+		preOrderTraversal: "1 2 4 ", inOrderTraversal: "4 2 1", height: 2},
+	{a: []string{"1", "2", "nil", "nil", "5"},
+		tree:              &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2, Right: &Node{Data: 5}}}},
+		preOrderTraversal: "1 2 5 ", inOrderTraversal: "2 5 1", height: 2},
+	{a: []string{"1", "nil", "3", "nil", "nil", "6"},
+		tree:              &BinaryTree{Root: &Node{Data: 1, Right: &Node{Data: 3, Left: &Node{Data: 6}}}},
+		preOrderTraversal: "1 3 6 ", inOrderTraversal: "1 6 3", height: 2},
+	{a: []string{"1", "nil", "3", "nil", "nil", "nil", "7"},
+		tree:              &BinaryTree{Root: &Node{Data: 1, Right: &Node{Data: 3, Right: &Node{Data: 7}}}},
+		preOrderTraversal: "1 3 7 ", inOrderTraversal: "1 3 7", height: 2},
 
+	// larger trees
+	{a: []string{"1", "2", "3", "4"}, tree: &BinaryTree{Root: &Node{
+		Data: 1, Left: &Node{Data: 2, Left: &Node{Data: 4}}, Right: &Node{Data: 3}}},
+		preOrderTraversal: "1 2 4 3 ", inOrderTraversal: "4 2 1 3", height: 2},
+	{a: []string{"1", "2", "3", "4", "5"}, tree: &BinaryTree{Root: &Node{
+		Data: 1, Left: &Node{Data: 2, Left: &Node{Data: 4}, Right: &Node{Data: 5}}, Right: &Node{Data: 3}}},
+		preOrderTraversal: "1 2 4 5 3 ", inOrderTraversal: "4 2 5 1 3", height: 2},
 }
 
 func TestCreateBinarySubTreeSuccess(t *testing.T) {
-	// 	{a: []string{"1", "2", "nil", "3"}, index: 0, expectedHeight: 3},
-	// 	{a: []string{"1", "2", "nil", "3", "4"}, index: 0, expectedHeight: 3},
-	// 	{a: []string{"1", "nil", "3", "nil", "nil", "6"}, index: 0, expectedHeight: 3},
 	for _, tc := range BinaryTreeTestCases {
 		t.Run(fmt.Sprintf("%v", tc.a), func(t *testing.T) {
 			root := CreateBinarySubtree(tc.a, 0)
@@ -72,6 +77,7 @@ func TestCreateBinarySubTreeSuccess(t *testing.T) {
 			if tc.height != treeHeight {
 				t.Errorf("Expected height %d but received %d", tc.height, treeHeight)
 			}
+			// TODO: use compareTree()
 		})
 	}
 }
@@ -99,6 +105,8 @@ func TestCreateBinarySubTreeEdgeCases(t *testing.T) {
 			if tc.expectedHeight != result {
 				t.Errorf("Expected height %d but received %d", tc.expectedHeight, result)
 			}
+			tree := BinaryTree{Root: root}
+			assertEmptyTree(t, tree)
 		})
 	}
 }
@@ -141,6 +149,20 @@ func TestInOrderTraversalRecursive(t *testing.T) {
 		t.Run(fmt.Sprintf("%#v", tc.a), func(t *testing.T) {
 			result := TraverseInOrderRecursive(tc.tree.Root)
 			if tc.inOrderTraversal != result {
+				t.Errorf("Expected: %#v but received %#v", tc.inOrderTraversal, result)
+			}
+		})
+	}
+}
+
+func TestLevelOrder(t *testing.T) {
+	for _, tc := range BinaryTreeTestCases {
+		t.Run(fmt.Sprintf("%#v", tc.a), func(t *testing.T) {
+			// takes advantage of the fact that the test tree data is always setup in a specific pattern
+			intsOnly := removeNils(tc.a)
+			expected := sortedIntsString(intsOnly)
+			result := TraverseLevelOrder(tc.tree.Root)
+			if expected != result {
 				t.Errorf("Expected: %#v but received %#v", tc.inOrderTraversal, result)
 			}
 		})

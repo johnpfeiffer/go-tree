@@ -5,7 +5,7 @@ type BinarySearchTree struct {
 	Root *Node
 }
 
-// Height is the longest distance from the root to a leaf in a binary tree
+// Height is the longest distance from the root to a leaf in a binary tree, simply extends BinaryTree.Height()
 func (tree *BinarySearchTree) Height() int {
 	if tree.Root == nil || (tree.Root.Left == nil && tree.Root.Right == nil) {
 		return 0
@@ -13,7 +13,7 @@ func (tree *BinarySearchTree) Height() int {
 	return SubtreeHeight(tree.Root) - 1
 }
 
-// createBST generates the BinarySearchTree by repeated insertions
+// createBST generates a Binary Search Tree by repeated insertions
 func createBST(a []int) BinarySearchTree {
 	bst := BinarySearchTree{}
 	for _, v := range a {

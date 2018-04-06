@@ -7,6 +7,8 @@ type BinaryTree struct {
 	Root *Node
 }
 
+// TODO: interfaces to interact with BinarySearchTrees
+
 // Node contains data (and usually a value or a pointer to a value) and pointers to the child nodes
 type Node struct {
 	Left  *Node
