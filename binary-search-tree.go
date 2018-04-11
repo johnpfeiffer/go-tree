@@ -45,3 +45,11 @@ func (tree *BinarySearchTree) InsertValue(target int) {
 		}
 	}
 }
+
+// MinimumDepth is a convenience wrapper for the shortest path from a BST root to a leaf
+func (tree *BinarySearchTree) MinimumDepth() int {
+	if tree.Root == nil {
+		return 0
+	}
+	return subtreeMinimumDepth(tree.Root, 1)
+}

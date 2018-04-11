@@ -194,7 +194,7 @@ func TestBSTHeight(t *testing.T) {
 	}
 }
 
-func TestTraverseLevelOrder(t *testing.T) {
+func TestBSTTraverseLevelOrder(t *testing.T) {
 	var testCases = []struct {
 		dataValues []int
 		height     int
@@ -221,11 +221,7 @@ func TestTraverseLevelOrder(t *testing.T) {
 	}
 }
 
-/*
-
-// func TestDisplay(t *testing.T) for tree.Display() is not very valuable since it is only a convenience wrapper
-
-func TestMinimumDepthDFS(t *testing.T) {
+func TestBSTMinimumDepthDFS(t *testing.T) {
 	var testCases = []struct {
 		dataValues []int
 		height     int
@@ -246,13 +242,18 @@ func TestMinimumDepthDFS(t *testing.T) {
 		{dataValues: []int{2, -3, -2, -4}, height: 2, minDepth: 3},
 	}
 	for _, tc := range testCases {
-		t.Run(fmt.Sprintf("Right sided tree %v", tc.dataValues), func(t *testing.T) {
+		t.Run(fmt.Sprintf("tree values: %v", tc.dataValues), func(t *testing.T) {
 			tree := createBST(tc.dataValues)
 			assertNumber(t, "height", tc.height, tree.Height())
 			assertNumber(t, "minimum depth", tc.minDepth, tree.MinimumDepth())
 		})
 	}
 }
+
+/*
+
+// func TestDisplay(t *testing.T) for tree.Display() is not very valuable since it is only a convenience wrapper
+
 
 
 func TestFindNothing(t *testing.T) {

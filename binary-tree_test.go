@@ -25,43 +25,62 @@ var BinaryTreeTestCases = []struct {
 	preOrderTraversal string
 	inOrderTraversal  string
 	height            int
+	minDepth          int
 }{
-	{a: []string{"1"}, tree: &BinaryTree{Root: &Node{Data: 1}}, preOrderTraversal: "1 ", inOrderTraversal: "1", height: 0},
-	{a: []string{"1", "nil"}, tree: &BinaryTree{Root: &Node{Data: 1}}, preOrderTraversal: "1 ", inOrderTraversal: "1", height: 0},
+	{a: []string{"1"}, tree: &BinaryTree{Root: &Node{Data: 1}}, preOrderTraversal: "1 ", inOrderTraversal: "1", height: 0, minDepth: 1},
+	{a: []string{"1", "nil"}, tree: &BinaryTree{Root: &Node{Data: 1}}, preOrderTraversal: "1 ", inOrderTraversal: "1", height: 0, minDepth: 1},
 	{a: []string{"1", "2"}, tree: &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2}}},
-		preOrderTraversal: "1 2 ", inOrderTraversal: "2 1", height: 1},
+		preOrderTraversal: "1 2 ", inOrderTraversal: "2 1", height: 1, minDepth: 2},
 	{a: []string{"1", "2", "nil", "nil"}, tree: &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2}}},
-		preOrderTraversal: "1 2 ", inOrderTraversal: "2 1", height: 1},
+		preOrderTraversal: "1 2 ", inOrderTraversal: "2 1", height: 1, minDepth: 2},
 	{a: []string{"1", "nil", "3"}, tree: &BinaryTree{Root: &Node{Data: 1, Left: nil, Right: &Node{Data: 3}}},
-		preOrderTraversal: "1 3 ", inOrderTraversal: "1 3", height: 1},
+		preOrderTraversal: "1 3 ", inOrderTraversal: "1 3", height: 1, minDepth: 2},
 
 	// perfect tree    1
 	//                2 3
 	{a: []string{"1", "2", "3"}, tree: &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2}, Right: &Node{Data: 3}}},
-		preOrderTraversal: "1 2 3 ", inOrderTraversal: "2 1 3", height: 1},
+		preOrderTraversal: "1 2 3 ", inOrderTraversal: "2 1 3", height: 1, minDepth: 2},
 
 	// degenerate trees  / / \ \
 	//                  /  \ /  \
 	{a: []string{"1", "2", "nil", "4"},
 		tree:              &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2, Left: &Node{Data: 4}}, Right: nil}},
-		preOrderTraversal: "1 2 4 ", inOrderTraversal: "4 2 1", height: 2},
+		preOrderTraversal: "1 2 4 ", inOrderTraversal: "4 2 1", height: 2, minDepth: 3},
 	{a: []string{"1", "2", "nil", "nil", "5"},
 		tree:              &BinaryTree{Root: &Node{Data: 1, Left: &Node{Data: 2, Right: &Node{Data: 5}}}},
-		preOrderTraversal: "1 2 5 ", inOrderTraversal: "2 5 1", height: 2},
+		preOrderTraversal: "1 2 5 ", inOrderTraversal: "2 5 1", height: 2, minDepth: 3},
 	{a: []string{"1", "nil", "3", "nil", "nil", "6"},
 		tree:              &BinaryTree{Root: &Node{Data: 1, Right: &Node{Data: 3, Left: &Node{Data: 6}}}},
-		preOrderTraversal: "1 3 6 ", inOrderTraversal: "1 6 3", height: 2},
+		preOrderTraversal: "1 3 6 ", inOrderTraversal: "1 6 3", height: 2, minDepth: 3},
 	{a: []string{"1", "nil", "3", "nil", "nil", "nil", "7"},
 		tree:              &BinaryTree{Root: &Node{Data: 1, Right: &Node{Data: 3, Right: &Node{Data: 7}}}},
-		preOrderTraversal: "1 3 7 ", inOrderTraversal: "1 3 7", height: 2},
+		preOrderTraversal: "1 3 7 ", inOrderTraversal: "1 3 7", height: 2, minDepth: 3},
 
-	// larger trees
+	// larger trees   1
+	// 				2   3
+	//			   4 5 6 7
 	{a: []string{"1", "2", "3", "4"}, tree: &BinaryTree{Root: &Node{
 		Data: 1, Left: &Node{Data: 2, Left: &Node{Data: 4}}, Right: &Node{Data: 3}}},
-		preOrderTraversal: "1 2 4 3 ", inOrderTraversal: "4 2 1 3", height: 2},
+		preOrderTraversal: "1 2 4 3 ", inOrderTraversal: "4 2 1 3", height: 2, minDepth: 2},
+	{a: []string{"1", "2", "3", "5"}, tree: &BinaryTree{Root: &Node{
+		Data: 1, Left: &Node{Data: 2, Right: &Node{Data: 5}}, Right: &Node{Data: 3}}},
+		preOrderTraversal: "1 2 5 3 ", inOrderTraversal: "2 5 1 3", height: 2, minDepth: 2},
+	{a: []string{"1", "2", "3", "6"}, tree: &BinaryTree{Root: &Node{
+		Data: 1, Left: &Node{Data: 2}, Right: &Node{Data: 3, Left: &Node{Data: 6}}}},
+		preOrderTraversal: "1 2 3 6 ", inOrderTraversal: "2 1 6 3", height: 2, minDepth: 2},
+
 	{a: []string{"1", "2", "3", "4", "5"}, tree: &BinaryTree{Root: &Node{
 		Data: 1, Left: &Node{Data: 2, Left: &Node{Data: 4}, Right: &Node{Data: 5}}, Right: &Node{Data: 3}}},
-		preOrderTraversal: "1 2 4 5 3 ", inOrderTraversal: "4 2 5 1 3", height: 2},
+		preOrderTraversal: "1 2 4 5 3 ", inOrderTraversal: "4 2 5 1 3", height: 2, minDepth: 2},
+	{a: []string{"1", "2", "3", "4", "nil", "6"}, tree: &BinaryTree{Root: &Node{
+		Data: 1, Left: &Node{Data: 2, Left: &Node{Data: 4}}, Right: &Node{Data: 3, Left: &Node{Data: 6}}}},
+		preOrderTraversal: "1 2 4 3 6 ", inOrderTraversal: "4 2 1 6 3", height: 2, minDepth: 3},
+	{a: []string{"1", "2", "3", "4", "nil", "nil", "7"}, tree: &BinaryTree{Root: &Node{
+		Data: 1, Left: &Node{Data: 2, Left: &Node{Data: 4}}, Right: &Node{Data: 3, Right: &Node{Data: 7}}}},
+		preOrderTraversal: "1 2 4 3 7 ", inOrderTraversal: "4 2 1 3 7", height: 2, minDepth: 3},
+	{a: []string{"1", "2", "3", "nil", "nil", "6", "7"}, tree: &BinaryTree{Root: &Node{
+		Data: 1, Left: &Node{Data: 2}, Right: &Node{Data: 3, Left: &Node{Data: 6}, Right: &Node{Data: 7}}}},
+		preOrderTraversal: "1 2 3 6 7 ", inOrderTraversal: "2 1 6 3 7", height: 2, minDepth: 2},
 }
 
 func TestCreateBinarySubTreeSuccess(t *testing.T) {
@@ -165,6 +184,15 @@ func TestLevelOrder(t *testing.T) {
 			if expected != result {
 				t.Errorf("Expected: %#v but received %#v", tc.inOrderTraversal, result)
 			}
+		})
+	}
+}
+
+func TestMinimumDepthDFS(t *testing.T) {
+	for _, tc := range BinaryTreeTestCases {
+		t.Run(fmt.Sprintf("tree values: %v", tc.a), func(t *testing.T) {
+			assertNumber(t, "height", tc.height, tc.tree.Height())
+			assertNumber(t, "minimum depth", tc.minDepth, tc.tree.MinimumDepth())
 		})
 	}
 }
