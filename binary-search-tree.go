@@ -53,3 +53,40 @@ func (tree *BinarySearchTree) MinimumDepth() int {
 	}
 	return subtreeMinimumDepth(tree.Root, 1)
 }
+
+// Find returns the first node that has a matching key
+func (tree *BinarySearchTree) Find(target int) *Node {
+	current := tree.Root
+	for {
+		switch {
+		case current == nil:
+			return nil
+		case current.Data == target:
+			return current
+		case current.Data > target:
+			current = current.Left
+		case current.Data < target:
+			current = current.Right
+		}
+	}
+}
+
+// FindBSTParent returns the parent of the first matching node from the subtree
+func FindBSTParent(target int, start *Node) *Node {
+	current := start
+	parent := current
+	for {
+		switch {
+		case current == nil:
+			return nil
+		case current.Data == target:
+			return parent
+		case current.Data < target:
+			parent = current
+			current = current.Right
+		case current.Data > target:
+			parent = current
+			current = current.Left
+		}
+	}
+}

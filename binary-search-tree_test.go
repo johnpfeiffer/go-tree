@@ -250,13 +250,7 @@ func TestBSTMinimumDepthDFS(t *testing.T) {
 	}
 }
 
-/*
-
-// func TestDisplay(t *testing.T) for tree.Display() is not very valuable since it is only a convenience wrapper
-
-
-
-func TestFindNothing(t *testing.T) {
+func TestBSTFindNothing(t *testing.T) {
 	nonExistentValue := 1001
 	for _, tc := range BSTTestCases {
 		t.Run(fmt.Sprintf("Should not find %v in tree %v ", nonExistentValue, tc.preOrderTraversal), func(t *testing.T) {
@@ -270,7 +264,7 @@ func TestFindNothing(t *testing.T) {
 	}
 }
 
-func TestFindSuccess(t *testing.T) {
+func TestBSTFindSuccess(t *testing.T) {
 	var testCases = []struct {
 		dataValues    []int
 		target        int
@@ -302,7 +296,7 @@ func TestFindSuccess(t *testing.T) {
 	}
 }
 
-func TestFindParentNil(t *testing.T) {
+func TestBSTFindParentNil(t *testing.T) {
 	nonExistentValue := 1001
 	for _, tc := range BSTTestCases {
 		t.Run(fmt.Sprintf("Should not find %v in tree %v ", nonExistentValue, tc.dataValues), func(t *testing.T) {
@@ -315,24 +309,24 @@ func TestFindParentNil(t *testing.T) {
 	}
 }
 
-// TestFindParentEasy leverages the fact that the first element inserted after the root become its child
-func TestFindParentEasy(t *testing.T) {
+// TestBSTFindParentEasy leverages the fact that the first element inserted after the root becomes its child
+func TestBSTFindParentEasy(t *testing.T) {
 	for _, tc := range BSTTestCases {
 		t.Run(fmt.Sprintf("in tree %v", tc.dataValues), func(t *testing.T) {
 			tree := createBST(tc.dataValues)
 			switch len(tc.dataValues) {
 			case 0:
-				result := FindParent(1001, tree.Root)
+				result := FindBSTParent(1001, tree.Root)
 				if result != nil {
 					t.Error("\nExpected nil when passed a nil node, but got", result)
 				}
 			case 1:
-				result := FindParent(tc.dataValues[0], tree.Root)
+				result := FindBSTParent(tc.dataValues[0], tree.Root)
 				if tc.dataValues[0] != result.Data {
 					t.Error("\nExpecting the parent is itself when searching for oneself, instead found", result)
 				}
 			default:
-				result := FindParent(tc.dataValues[1], tree.Root)
+				result := FindBSTParent(tc.dataValues[1], tree.Root)
 				if tc.dataValues[0] != result.Data {
 					t.Error("\nExpected parent data ", tc.dataValues[0], " in: ", tc.preOrderTraversal, " but got ", result)
 				}
@@ -341,7 +335,7 @@ func TestFindParentEasy(t *testing.T) {
 	}
 }
 
-func TestFindParentSuccess(t *testing.T) {
+func TestBSTFindParentSuccess(t *testing.T) {
 	var testCases = []struct {
 		dataValues    []int
 		target        int
@@ -362,7 +356,7 @@ func TestFindParentSuccess(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("Find parent of %v in tree %v ", tc.target, tc.dataValues), func(t *testing.T) {
 			tree := createBST(tc.dataValues)
-			result := FindParent(tc.target, tree.Root)
+			result := FindBSTParent(tc.target, tree.Root)
 			if tc.expectedData != result.Data {
 				t.Error("\nExpected parent data:", tc.expectedData, "\nReceived: ", result.Data)
 			}
@@ -371,6 +365,10 @@ func TestFindParentSuccess(t *testing.T) {
 		})
 	}
 }
+
+/*
+
+// func TestDisplay(t *testing.T) for tree.Display() is not very valuable since it is only a convenience wrapper
 
 func TestFindRightMostParent(t *testing.T) {
 	var testCases = []struct {
