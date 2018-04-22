@@ -178,8 +178,8 @@ func TestLevelOrder(t *testing.T) {
 	for _, tc := range BinaryTreeTestCases {
 		t.Run(fmt.Sprintf("%#v", tc.a), func(t *testing.T) {
 			// takes advantage of the fact that the test tree data is always setup in a specific pattern
-			intsOnly := removeNils(tc.a)
-			expected := sortedIntsString(intsOnly)
+			intsOnly := removeNils(t, tc.a)
+			expected := sortedIntsString(t, intsOnly)
 			result := TraverseLevelOrder(tc.tree.Root)
 			if expected != result {
 				t.Errorf("Expected: %#v but received %#v", tc.inOrderTraversal, result)

@@ -139,7 +139,7 @@ func TestBSTInsertSimple(t *testing.T) {
 func TestBSTInsertAdvanced(t *testing.T) {
 	for _, tc := range BSTTestCases {
 		t.Run(fmt.Sprintf("Insert to create tree %v ", tc.preOrderTraversal), func(t *testing.T) {
-			expected := sortedIntsString(tc.dataValues)
+			expected := sortedIntsString(t, tc.dataValues)
 			tree := createBST(tc.dataValues)
 			result := TraverseInOrder(tree.Root)
 			if expected != result {
@@ -156,7 +156,7 @@ func TestBSTInsertAdvanced(t *testing.T) {
 func TestBSTInOrderTraversal(t *testing.T) {
 	for _, tc := range BSTTestCases {
 		t.Run(fmt.Sprintf("%v", tc.dataValues), func(t *testing.T) {
-			expected := sortedIntsString(tc.dataValues)
+			expected := sortedIntsString(t, tc.dataValues)
 			tree := createBST(tc.dataValues)
 			result := TraverseInOrder(tree.Root)
 			if expected != result {
@@ -169,7 +169,7 @@ func TestBSTInOrderTraversal(t *testing.T) {
 func TestBSTInOrderTraversalRecursive(t *testing.T) {
 	for _, tc := range BSTTestCases {
 		t.Run(fmt.Sprintf("%v ", tc.dataValues), func(t *testing.T) {
-			expected := sortedIntsString(tc.dataValues)
+			expected := sortedIntsString(t, tc.dataValues)
 			tree := createBST(tc.dataValues)
 			result := TraverseInOrderRecursive(tree.Root)
 			if expected != result {
@@ -182,7 +182,7 @@ func TestBSTInOrderTraversalRecursive(t *testing.T) {
 func TestBSTHeight(t *testing.T) {
 	for _, tc := range BSTTestCases {
 		t.Run(fmt.Sprintf("Height of tree %v ", tc.preOrderTraversal), func(t *testing.T) {
-			expected := sortedIntsString(tc.dataValues)
+			expected := sortedIntsString(t, tc.dataValues)
 			tree := createBST(tc.dataValues)
 			treeString := TraverseInOrder(tree.Root)
 			if expected != treeString {
@@ -636,7 +636,8 @@ func TestLowestCommonAncestor(t *testing.T) {
 
 // HELPER FUNCTIONS
 
-func removeNils(a []string) []int {
+func removeNils(t *testing.T, a []string) []int {
+	t.Helper()
 	var result []int
 	for i, v := range a {
 		if v != "nil" {
@@ -651,7 +652,8 @@ func removeNils(a []string) []int {
 }
 
 // sortedIntsString converts a slice of ints to a string, e.g. {1, 2} becomes " 1 2" (does not modify the original slice)
-func sortedIntsString(a []int) string {
+func sortedIntsString(t *testing.T, a []int) string {
+	t.Helper()
 	var result string
 	temp := make([]int, len(a))
 	copy(temp, a)
@@ -662,7 +664,8 @@ func sortedIntsString(a []int) string {
 	return strings.TrimSpace(result)
 }
 
-func intInSlice(target int, a []int) bool {
+func intInSlice(t *testing.T, target int, a []int) bool {
+	t.Helper()
 	for _, v := range a {
 		if target == v {
 			return true
@@ -705,6 +708,7 @@ func assertLeafNode(t *testing.T, expectedData int, n *Node) {
 }
 
 func assertNode(t *testing.T, expected, result *Node, hint string) {
+	t.Helper()
 	if expected == nil {
 		if result != nil {
 			t.Error("\nExpected", hint, "as nil but received", hint, "node with data:", result.Data)
@@ -723,6 +727,7 @@ func assertNode(t *testing.T, expected, result *Node, hint string) {
 }
 
 func assertNumber(t *testing.T, hint string, expected, result int) {
+	t.Helper()
 	if expected != result {
 		t.Error("\nExpected", hint, ":", expected, "\nReceived:", result)
 	}
