@@ -11,7 +11,9 @@ func TestTrieInsertBasic(t *testing.T) {
 	assertTrieKey(t, root.Key, 0)
 
 	assertTrieKey(t, root.Children['h'].Key, 'h')
+	assertBoolean(t, false, root.Children['h'].EndOfWord)
 	assertTrieKey(t, root.Children['h'].Children['i'].Key, 'i')
+	assertBoolean(t, true, root.Children['h'].Children['i'].EndOfWord)
 
 	assertBoolean(t, true, root.Find("hi"))
 	assertBoolean(t, false, root.Find("high"))
@@ -24,16 +26,29 @@ func TestTrieInsertBasic(t *testing.T) {
 
 	assertBoolean(t, true, root.Find("hi"))
 	assertBoolean(t, true, root.Find("hello"))
-	assertBoolean(t, true, root.Find("he"))
-	assertBoolean(t, true, root.Find("hell"))
-	assertBoolean(t, false, root.Find("high"))
-	assertBoolean(t, false, root.Find("hella"))
+	shouldNotFind(t, root, []string{"", "he", "hell", "high", "hella"})
 	contents = root.getWords()
 	assertNumber(t, "number of leaf nodes in the Trie", 2, len(contents))
-
 	assertString(t, "Trie contents", "hi", contents[0])
 	assertString(t, "Trie contents", "hello", contents[1])
 }
+
+func TestTrieFind(t *testing.T) {
+	root := &TrieNode{}                     // root has no key associated with it, only children
+	assertBoolean(t, false, root.Find(""))  // empty trie finds nothing
+	assertBoolean(t, false, root.Find("a")) // empty trie finds nothing
+
+	TrieInsert(root, "a")
+	assertBoolean(t, true, root.Find("a"))
+	shouldNotFind(t, root, []string{"", "aa", "i", "am"}) // edge case, repetition, does not exist, too long
+
+	TrieInsert(root, "and")
+	assertBoolean(t, true, root.Find("and"))
+	assertBoolean(t, false, root.Find("an"))              // will not find without an end-of-word
+	assertBoolean(t, true, root.Find("a"))                // regression check
+	shouldNotFind(t, root, []string{"", "aa", "i", "am"}) // edge case, repetition, does not exist, too long
+}
+
 func TestTrieNextNode(t *testing.T) {
 	var testCases = []struct {
 		children []*TrieNode
@@ -62,6 +77,12 @@ func TestTrieNextNode(t *testing.T) {
 }
 
 // helpers
+
+func shouldNotFind(t *testing.T, root *TrieNode, words []string) {
+	for _, word := range words {
+		assertBoolean(t, false, root.Find(word))
+	}
+}
 
 func generateTrieChildren(t *testing.T, a []rune) []*TrieNode {
 	t.Helper()

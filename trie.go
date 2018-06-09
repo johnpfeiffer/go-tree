@@ -2,8 +2,9 @@ package gotree
 
 // TrieNode is a node in a prefix tree https://en.wikipedia.org/wiki/Trie
 type TrieNode struct {
-	Key      rune
-	Children map[rune]*TrieNode
+	Key       rune
+	EndOfWord bool
+	Children  map[rune]*TrieNode
 }
 
 // TODO: is a string more readable and just as efficient as a rune?
@@ -22,6 +23,7 @@ func TrieInsert(root *TrieNode, s string) {
 		}
 		current = next
 	}
+	current.EndOfWord = true
 }
 
 // Find returns if a string is in the Trie
@@ -35,7 +37,7 @@ func (t *TrieNode) Find(s string) bool {
 		}
 		current = next
 	}
-	if index == len(s) {
+	if index == len(s) && current.EndOfWord == true {
 		return true
 	}
 	return false
