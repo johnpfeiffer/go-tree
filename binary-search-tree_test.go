@@ -725,10 +725,3 @@ func assertNode(t *testing.T, expected, result *Node, hint string) {
 		}
 	}
 }
-
-func assertNumber(t *testing.T, hint string, expected, result int) {
-	t.Helper()
-	if expected != result {
-		t.Error("\nExpected", hint, ":", expected, "\nReceived:", result)
-	}
-}
